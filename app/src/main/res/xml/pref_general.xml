@@ -1,0 +1,10 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="-1"
+        android:key="activity_calendar"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/activity_calendar" />
+
+</PreferenceScreen>

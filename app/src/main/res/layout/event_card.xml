@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/events_view"
+    android:layout_margin="5dp"
+    card_view:cardElevation="3dp"
+    card_view:contentPadding="4dp">
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <com.hootsuite.nachos.NachoTextView
+            android:id="@+id/nacho_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toTopOf="parent"
+            card_view:layout_constraintWidth_default="spread"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            android:hint="Tags" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/item_description_panel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@id/nacho_text_view"
+            card_view:layout_constraintWidth_default="spread"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp">
+
+            <EditText
+                android:id="@+id/item_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/evt_title" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/start_time"
+            android:layout_width="42dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintStart_toStartOf="parent"
+            card_view:layout_constraintTop_toBottomOf="@+id/item_description_panel"
+            card_view:layout_constraintEnd_toStartOf="@+id/end_time"
+            android:layout_marginEnd="32dp" />
+
+        <Button
+            android:id="@+id/clone_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Clone"
+            card_view:layout_constraintBottom_toBottomOf="@+id/startstop_event"
+            card_view:layout_constraintEnd_toEndOf="parent"
+            card_view:layout_constraintRight_toRightOf="parent"
+            card_view:layout_constraintTop_toTopOf="@+id/startstop_event"
+            card_view:layout_constraintVertical_bias="0.5"
+            tools:layout_editor_absoluteX="287dp"
+            tools:layout_editor_absoluteY="51dp" />
+
+        <Button
+            android:id="@+id/startstop_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Start"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            card_view:layout_constraintEnd_toStartOf="@+id/clone_event"
+            card_view:layout_constraintTop_toBottomOf="@+id/item_description_panel"
+            tools:layout_editor_absoluteY="51dp"
+            tools:layout_editor_absoluteX="174dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/end_time"
+            android:layout_width="42dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            card_view:layout_constraintTop_toBottomOf="@+id/item_description_panel"
+            card_view:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            card_view:layout_constraintEnd_toStartOf="@+id/startstop_event"
+            android:layout_marginEnd="16dp"
+            card_view:layout_constraintStart_toEndOf="@+id/start_time"
+            android:layout_marginStart="16dp" />
+
+        <TextView
+            android:id="@+id/sep1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text=">"
+            card_view:layout_constraintBottom_toBottomOf="@+id/end_time"
+            card_view:layout_constraintEnd_toStartOf="@+id/end_time"
+            card_view:layout_constraintStart_toEndOf="@+id/start_time"
+            card_view:layout_constraintTop_toTopOf="@+id/end_time" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</android.support.v7.widget.CardView>
