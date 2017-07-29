@@ -18,7 +18,18 @@ import android.view.Menu
 import android.view.MenuItem
 import org.didong.didong.events.EventsRecyclerAdapter
 import android.content.Intent
+import android.support.v7.widget.CardView
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.Button
+import android.widget.DatePicker
+import android.widget.EditText
+import android.widget.TextView
 import org.didong.didong.events.EventDetailService
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, DataChangeEventListener {
@@ -35,6 +46,54 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             ActivityCompat.requestPermissions(this,
                     arrayOf(Manifest.permission.READ_CONTACTS,Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 0);
         }
+
+        val currentDateCard = findViewById(R.id.currentdate_card) as CardView
+        val currentDate = findViewById(R.id.currentDate) as EditText
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+        initEditTextWithTodaysDate(currentDate, dateFormat)
+        currentDate.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(newText: CharSequence?, startPos: Int, endPos: Int, length: Int) {
+                val currentDateStr = newText.toString()
+                try {
+                    val selectedCurrentDate = dateFormat.parse(currentDateStr)
+                    evtService.currentDate = selectedCurrentDate
+                    evtService.refreshCurrentEventList(this@MainActivity)
+                } catch(parseException: ParseException) {
+                    // Do nothing because the date input could be edited and partial
+                    // if the input is finished thus the date is changed and the change is apply
+                }
+            }
+        })
+
+        val currentDatePicker = findViewById(R.id.currentDatePicker) as DatePicker
+
+
+        val chooseCurrentDate = findViewById(R.id.chooseCurrentDate) as Button
+        chooseCurrentDate.setOnClickListener {
+            if(currentDatePicker.visibility == View.VISIBLE) {
+                currentDatePicker.visibility = View.GONE
+            } else {
+                // Init date picker to date of today
+                // TODO : Should init with the value of current date field
+                val today = Calendar.getInstance()
+                currentDatePicker.init(today.get(Calendar.YEAR), today.get(Calendar.MONTH), today.get(Calendar.DAY_OF_MONTH), { _, year, monthOfYear, dayOfMonth ->
+                    currentDate.setText("$year-${monthOfYear+1}-$dayOfMonth")
+                })
+                currentDatePicker.visibility = View.VISIBLE
+            }
+        }
+
+        val goToday = findViewById(R.id.goToday)
+        goToday.setOnClickListener {
+            initEditTextWithTodaysDate(currentDate, dateFormat)
+        }
+
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
@@ -57,6 +116,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         eventsView.adapter = evtRecyclerAdapter
         eventsView.layoutManager = LinearLayoutManager(this)
         EventDetailService.instance.listeners.add(this)
+    }
+
+    private fun initEditTextWithTodaysDate(editText: EditText, dateFormat: SimpleDateFormat) {
+        val today = Calendar.getInstance()
+        editText.setText(dateFormat.format(today.time), TextView.BufferType.EDITABLE)
     }
 
     override fun dataChange(newObject: Any) {

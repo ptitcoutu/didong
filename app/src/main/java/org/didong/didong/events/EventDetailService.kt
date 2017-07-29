@@ -45,6 +45,7 @@ class EventDetailService private constructor() {
 
     val CALENDAR_EVENTS_URI = CalendarContract.Events.CONTENT_URI
     val listeners : MutableList<DataChangeEventListener> = mutableListOf()
+    var currentDate : Date = Date()
 
     fun getEvents(parentActivity: Activity): List<EventDetail> {
 
@@ -63,9 +64,13 @@ class EventDetailService private constructor() {
                         .setAction("Close", null).show()
                 return evts;
             }
-            val selection = "(${CalendarContract.Events.CALENDAR_ID} = ?)"
+            val selection = "(${CalendarContract.Events.CALENDAR_ID} = ? and ${CalendarContract.Events.DTSTART} >= ? and ${CalendarContract.Events.DTSTART} < ?)"
             //val selectionArgs = arrayOf(activityCalendar)
-            val selectionArgs = arrayOf(activityCalendarDetail.id.toString())
+            val numberOfMillisInADay = 24*60*60*1000
+            val currentDateTime = currentDate.time
+            val nextDayAfterCurrentDateTime = currentDateTime+numberOfMillisInADay
+            val selectionArgs = arrayOf(activityCalendarDetail.id.toString(), currentDateTime.toString(), nextDayAfterCurrentDateTime.toString())
+
             // Submit the query and get a Cursor object back.
             try {
                 cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null)
@@ -106,8 +111,8 @@ class EventDetailService private constructor() {
             val eventData = ContentValues(6)
             val calendarDetail = calendarService.getActivityCalendarDetail(parentActivity)
             if (calendarDetail != null) {
-                eventData.put(CalendarContract.Events.DTSTART, Date().time)
-                eventData.put(CalendarContract.Events.DTEND, Date().time)
+                eventData.put(CalendarContract.Events.DTSTART, currentDate.time)
+                eventData.put(CalendarContract.Events.DTEND, currentDate.time)
                 eventData.put(CalendarContract.Events.TITLE, "")
                 eventData.put(CalendarContract.Events.DESCRIPTION, EventDescription.EMPTY_DESCRIPTION_JSON)
                 eventData.put(CalendarContract.Events.EVENT_TIMEZONE, calendarDetail?.timeZone)
@@ -162,5 +167,9 @@ class EventDetailService private constructor() {
 
     private fun notifyChange(data: Any) {
         listeners.forEach { it.dataChange(data) }
+    }
+
+    fun refreshCurrentEventList(parentActivity: Activity) {
+        notifyChange(currentDate)
     }
 }
