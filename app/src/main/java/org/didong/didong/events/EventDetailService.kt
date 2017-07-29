@@ -7,6 +7,7 @@ import android.provider.CalendarContract
 import android.support.design.widget.Snackbar
 import org.didong.didong.DataChangeEventListener
 import org.didong.didong.R
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -45,7 +46,8 @@ class EventDetailService private constructor() {
 
     val CALENDAR_EVENTS_URI = CalendarContract.Events.CONTENT_URI
     val listeners : MutableList<DataChangeEventListener> = mutableListOf()
-    var currentDate : Date = Date()
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+    var currentDate : Date = dateFormat.parse(dateFormat.format(Date()))
 
     fun getEvents(parentActivity: Activity): List<EventDetail> {
 
