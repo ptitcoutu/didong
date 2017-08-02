@@ -18,12 +18,31 @@ import java.util.*
 public class EventsRecyclerAdapter(val parentActivity: Activity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     val evtService = EventDetailService.instance
     var calendarEvents = evtService.getEvents(parentActivity)
+    val EVENT_DETAIL = 0
+    val DATE_SELECTION = 1
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup?, i: Int): RecyclerView.ViewHolder {
+    override fun getItemViewType(position: Int): Int {
+        // The first card is the date selection card
+        return if (position == 0 || position == calendarEvents.size+1) DATE_SELECTION else EVENT_DETAIL;
+    }
+
+    override fun onCreateViewHolder(viewGroup: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
         if (viewGroup != null) {
-            val v: View = LayoutInflater.from(viewGroup.context).inflate(R.layout.event_card, viewGroup, false)
-            var viewHolder = EventsViewHolder(parentActivity, v)
-            return viewHolder
+            when (viewType) {
+                DATE_SELECTION -> {
+                    val v: View = LayoutInflater.from(viewGroup.context).inflate(R.layout.date_selection, viewGroup, false)
+                    val viewHolder = DateSelectionViewHolder(parentActivity, v)
+                    return viewHolder
+                }
+                EVENT_DETAIL -> {
+                    val v: View = LayoutInflater.from(viewGroup.context).inflate(R.layout.event_card, viewGroup, false)
+                    val viewHolder = EventsViewHolder(parentActivity, v)
+                    return viewHolder
+                }
+                else -> {
+                    throw IllegalArgumentException("unknown viewType: $viewType")
+                }
+            }
         } else {
             throw IllegalArgumentException("don't know how to manage null viewgroup")
         }
@@ -31,7 +50,7 @@ public class EventsRecyclerAdapter(val parentActivity: Activity) : RecyclerView.
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder?, i: Int) {
         if (viewHolder is EventsViewHolder) {
-            val evt : EventDetail = calendarEvents[i]
+            val evt : EventDetail = calendarEvents[i-1]
             val sdf = SimpleDateFormat("MM-dd hh:mm")
             viewHolder.evtDetail = evt
             viewHolder.itemTitle.setText(evt.title, TextView.BufferType.EDITABLE)
@@ -50,13 +69,15 @@ public class EventsRecyclerAdapter(val parentActivity: Activity) : RecyclerView.
                 viewHolder.startStopButton.setText("Start")
             }
 
+        } else if (viewHolder is DateSelectionViewHolder) {
+            // Nothing to do because data is shared from event detail service
         } else {
             throw IllegalArgumentException("don't know how to bind on a null viewHolder")
         }
     }
 
     override fun getItemCount(): Int {
-        return calendarEvents.size
+        return calendarEvents.size+2
     }
 
     fun reloadEvents() {

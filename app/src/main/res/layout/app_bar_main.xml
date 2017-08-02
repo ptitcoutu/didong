@@ -31,13 +31,13 @@
 
     </android.support.v7.widget.RecyclerView>
 
-
+<!--
     <include
         layout="@layout/date_selection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|fill_horizontal"/>
-
+-->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
