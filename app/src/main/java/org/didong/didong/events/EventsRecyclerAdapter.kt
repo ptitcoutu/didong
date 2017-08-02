@@ -77,7 +77,12 @@ public class EventsRecyclerAdapter(val parentActivity: Activity) : RecyclerView.
     }
 
     override fun getItemCount(): Int {
-        return calendarEvents.size+2
+        if (calendarEvents.size>0) {
+            return calendarEvents.size+2
+        } else {
+            return 1
+        }
+
     }
 
     fun reloadEvents() {

@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.*
 import org.didong.didong.R
 import com.hootsuite.nachos.NachoTextView
+import org.didong.didong.DataChangeEventListener
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -37,11 +38,25 @@ class DateSelectionViewHolder : RecyclerView.ViewHolder {
                     val currentDateStr = newText.toString()
                     try {
                         val selectedCurrentDate = dateFormat.parse(currentDateStr)
-                        evtService.currentDate = selectedCurrentDate
-                        evtService.refreshCurrentEventList(parentActivity)
+                        if (evtService.currentDate != selectedCurrentDate) {
+                            evtService.currentDate = selectedCurrentDate
+                            evtService.refreshCurrentEventList(parentActivity)
+                        }
                     } catch(parseException: ParseException) {
                         // Do nothing because the date input could be edited and partial
                         // if the input is finished thus the date is changed and the change is apply
+                    }
+                }
+            })
+
+            evtService.listeners.add(object : DataChangeEventListener {
+                override fun dataChange(evt: Any) {
+                    if (evt is Date) {
+                        // Check if the date is really 'changed'
+                        val newCurrentDateStr = dateFormat.format(evt.time)
+                        if (currentDate.text.toString() != newCurrentDateStr) {
+                            currentDate.setText(newCurrentDateStr, TextView.BufferType.EDITABLE)
+                        }
                     }
                 }
             })
