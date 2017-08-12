@@ -14,9 +14,13 @@ import java.util.*
  * Created by Vincent Couturier on 02/07/2017.
  */
 class EventDetailService private constructor() {
-    init { println("This ($this) is a singleton") }
+    init {
+        println("This ($this) is a singleton")
+    }
 
-    private object Holder { val INSTANCE = EventDetailService() }
+    private object Holder {
+        val INSTANCE = EventDetailService()
+    }
 
     companion object {
         val instance: EventDetailService by lazy { Holder.INSTANCE }
@@ -45,32 +49,32 @@ class EventDetailService private constructor() {
     val PROJECTION_CALENDAR_ID_INDEX = 6
 
     val CALENDAR_EVENTS_URI = CalendarContract.Events.CONTENT_URI
-    val listeners : MutableList<DataChangeEventListener> = mutableListOf()
+    val listeners: MutableList<DataChangeEventListener> = mutableListOf()
     val dateFormat = SimpleDateFormat("yyyy-MM-dd")
-    var currentDate : Date = dateFormat.parse(dateFormat.format(Date()))
+    var currentDate: Date = dateFormat.parse(dateFormat.format(Date()))
 
     fun getEvents(parentActivity: Activity): List<EventDetail> {
 
         val evts = ArrayList<EventDetail>()
 
         val activityCalendar = calendarService.getActivityCalendar(parentActivity)
-        if (activityCalendar.length>0) {
+        if (activityCalendar.length > 0) {
 
             // Run query
             var cur: Cursor? = null
             val cr = parentActivity.contentResolver
             val uri = CALENDAR_EVENTS_URI
             val activityCalendarDetail = calendarService.getActivityCalendarDetail(parentActivity)
-            if(activityCalendarDetail == null) {
+            if (activityCalendarDetail == null) {
                 Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Activity calendar must be selected in app settings", Snackbar.LENGTH_LONG)
                         .setAction("Close", null).show()
                 return evts;
             }
             val selection = "(${CalendarContract.Events.CALENDAR_ID} = ? and ${CalendarContract.Events.DTSTART} >= ? and ${CalendarContract.Events.DTSTART} < ?)"
             //val selectionArgs = arrayOf(activityCalendar)
-            val numberOfMillisInADay = 24*60*60*1000
+            val numberOfMillisInADay = 24 * 60 * 60 * 1000
             val currentDateTime = currentDate.time
-            val nextDayAfterCurrentDateTime = currentDateTime+numberOfMillisInADay
+            val nextDayAfterCurrentDateTime = currentDateTime + numberOfMillisInADay
             val selectionArgs = arrayOf(activityCalendarDetail.id.toString(), currentDateTime.toString(), nextDayAfterCurrentDateTime.toString())
 
             // Submit the query and get a Cursor object back.
@@ -90,7 +94,7 @@ class EventDetailService private constructor() {
                     val description = cur.getString(PROJECTION_DESCRIPTION_INDEX)
                     val alDay = cur.getString(PROJECTION_ALL_DAY_INDEX)
                     val calId = cur.getString(PROJECTION_CALENDAR_ID_INDEX)
-                    evts.add(EventDetail(id = evtID, calendarId =  calId, startTime = dtStart, endTime = dtEnd, title = title, description = EventDescription.fromJson(description)))
+                    evts.add(EventDetail(id = evtID, calendarId = calId, startTime = dtStart, endTime = dtEnd, title = title, description = EventDescription.fromJson(description)))
                 }
             } catch (e: SecurityException) {
                 Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
@@ -165,6 +169,28 @@ class EventDetailService private constructor() {
             Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
                     .setAction("Close", null).show()
         }
+    }
+
+    /**
+     * Get for each tag of a day the sum of all seconds spent in all events with this tag
+     */
+    fun getTagsActivity(parentActivity: Activity): Map<String, Long> {
+        val events = getEvents(parentActivity)
+        val tags = events.flatMap { it.description.tags }.distinct()
+        val tagsActivity = tags.map { tag ->
+            tag to events.filter { it.description.tags.contains(tag) }.fold(0L) { sumOfActivity : Long, eventDetail ->
+                if(eventDetail.startTime != null && eventDetail.startTime != ""&& (eventDetail.description.started || eventDetail.startTime != eventDetail.endTime) ) {
+                    val startTime = eventDetail.startTime.toLong()
+                    // If the event is not terminated the endTime is evaluated to now otherwise to the saved endTime of the event
+                    val endTime : Long = if(eventDetail.description?.started) Date().time else eventDetail.endTime!!.toLong()
+                    val elapse = endTime-startTime
+                    sumOfActivity+elapse
+                } else {
+                    sumOfActivity
+                }
+            }
+        }.toMap()
+        return tagsActivity
     }
 
     private fun notifyChange(data: Any) {
