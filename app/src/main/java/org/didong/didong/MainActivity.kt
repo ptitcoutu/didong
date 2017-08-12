@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, DataChangeEventListener {
+class MainActivity : AppCompatActivity(), DataChangeEventListener {
     var evtRecyclerAdapter : EventsRecyclerAdapter? = null
     val evtService = EventDetailService.instance
 
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         val navigationView = findViewById(R.id.nav_view) as NavigationView
-        navigationView.setNavigationItemSelectedListener(this)
+        navigationView.setNavigationItemSelectedListener(MainNavigationListener(this, drawer))
 
         val eventsView = findViewById(R.id.events_view) as RecyclerView
         evtRecyclerAdapter = EventsRecyclerAdapter(this)
@@ -105,31 +105,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
-        when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
-            }
-            R.id.nav_gallery -> {
-
-            }
-            R.id.nav_slideshow -> {
-
-            }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
-
-            }
-        }
-
-        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
-        drawer.closeDrawer(GravityCompat.START)
-        return true
-    }
 }

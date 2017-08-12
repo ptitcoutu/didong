@@ -39,4 +39,8 @@ dependencies {
     compile "com.hootsuite.android:nachos:1.1.1"
     implementation 'com.android.support:support-v4:25.4.0'
     implementation 'com.android.support:support-vector-drawable:25.4.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
+
+
+apply plugin: 'kotlin-android-extensions'
