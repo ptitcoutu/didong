@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Didong</string>
+    <string name="navigation_drawer_open">Ouvrir la navigation</string>
+    <string name="navigation_drawer_close">Fermer la navigation</string>
+    <string name="action_settings">Configuration</string>
+    <string name="current_date">Date</string>
+    <string name="evt_title">Intitulé</string>
+    <string name="pref_header_general">Général</string>
+    <string name="title_activity_settings">Configuration</string>
+    <string name="pref_header_data_sync">Données et Synchronisation</string>
+    <string name="pref_title_sync_frequency">Fréquence de synchronisation</string>
+    <string name="pref_title_system_sync_settings">Paramètres système de synchronisation</string>
+    <string name="activity_calendar">Calendrier des Activités</string>
+    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_title_alert_notifications">Alertes de nofications</string>
+    <string name="pref_title_alert_sound">Alerte sonore</string>
+    <string name="pref_ringtone_silent">Silencieux</string>
+    <string name="pref_title_vibrate">Vibration</string>
+    <string name="day_activities">Saisie d\'Activité</string>
+    <string name="menu_report">Rapport</string>
+</resources>
