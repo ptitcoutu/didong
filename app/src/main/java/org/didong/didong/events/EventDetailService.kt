@@ -79,7 +79,7 @@ class EventDetailService private constructor() {
 
             // Submit the query and get a Cursor object back.
             try {
-                cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, null)
+                cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, "${CalendarContract.Events.DTSTART} ASC, ${CalendarContract.Events.CALENDAR_ID} ASC")
                 while (cur.moveToNext()) {
                     // Get the field values
                     val evtID = cur.getLong(PROJECTION_ID_INDEX);

@@ -51,7 +51,7 @@ public class EventsRecyclerAdapter(val parentActivity: Activity) : RecyclerView.
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder?, i: Int) {
         if (viewHolder is EventsViewHolder) {
             val evt : EventDetail = calendarEvents[i-1]
-            val sdf = SimpleDateFormat("MM-dd hh:mm")
+            val sdf = SimpleDateFormat("MM-dd HH:mm")
             viewHolder.evtDetail = evt
             viewHolder.itemTitle.setText(evt.title, TextView.BufferType.EDITABLE)
             val startTxt = if (evt.startTime!=null) sdf.format(Date(evt.startTime.toLong())) else ""
