@@ -114,11 +114,16 @@ class EventDetailService private constructor() {
     fun createEvent(parentActivity: Activity) {
         try {
             val cr = parentActivity.contentResolver
+            val nowCal = Calendar.getInstance()
+            val currentDateCal = Calendar.getInstance()
+            currentDateCal.time = currentDate
+            nowCal.set(Calendar.YEAR, currentDateCal.get(Calendar.YEAR))
+            nowCal.set(Calendar.DAY_OF_YEAR, currentDateCal.get(Calendar.DAY_OF_YEAR))
             val eventData = ContentValues(6)
             val calendarDetail = calendarService.getActivityCalendarDetail(parentActivity)
             if (calendarDetail != null) {
-                eventData.put(CalendarContract.Events.DTSTART, currentDate.time)
-                eventData.put(CalendarContract.Events.DTEND, currentDate.time)
+                eventData.put(CalendarContract.Events.DTSTART, nowCal.timeInMillis)
+                eventData.put(CalendarContract.Events.DTEND, nowCal.timeInMillis)
                 eventData.put(CalendarContract.Events.TITLE, "")
                 eventData.put(CalendarContract.Events.DESCRIPTION, EventDescription.EMPTY_DESCRIPTION_JSON)
                 eventData.put(CalendarContract.Events.EVENT_TIMEZONE, calendarDetail?.timeZone)

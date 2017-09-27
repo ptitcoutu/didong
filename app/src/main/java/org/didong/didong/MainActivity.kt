@@ -14,14 +14,14 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.view.Menu
-import android.view.MenuItem
 import org.didong.didong.events.EventsRecyclerAdapter
 import android.content.Intent
+import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.widget.CardView
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
+import android.util.Log
+import android.view.*
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
@@ -33,18 +33,17 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity(), DataChangeEventListener {
-    var evtRecyclerAdapter : EventsRecyclerAdapter? = null
+    var evtRecyclerAdapter: EventsRecyclerAdapter? = null
     val evtService = EventDetailService.instance
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR)!= PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
-                != PackageManager.PERMISSION_GRANTED) {
+                        != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_CONTACTS,Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 0);
+                    arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 0);
         }
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
