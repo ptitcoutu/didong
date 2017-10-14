@@ -52,8 +52,29 @@ class EventDetailService private constructor() {
     val listeners: MutableList<DataChangeEventListener> = mutableListOf()
     val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     var currentDate: Date = dateFormat.parse(dateFormat.format(Date()))
+    val numberOfMillisInADay = 24 * 60 * 60 * 1000
+
+    fun getEventsOfWeek(parentActivity: Activity, week: Int, year: Int): List<EventDetail> {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, year)
+        cal.set(Calendar.WEEK_OF_YEAR, week)
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        val beginOffirstDayOfWeek = cal.timeInMillis
+        cal.set(Calendar.WEEK_OF_YEAR, week+1)
+        val beginOffNextDayAfterLastDayOfWeek = cal.timeInMillis
+        return getEvents(parentActivity, beginOffirstDayOfWeek, beginOffNextDayAfterLastDayOfWeek);
+    }
 
     fun getEvents(parentActivity: Activity): List<EventDetail> {
+        val currentDateTime = currentDate.time
+        val nextDayAfterCurrentDateTime = currentDateTime + numberOfMillisInADay
+        return getEvents(parentActivity, currentDateTime, nextDayAfterCurrentDateTime);
+    }
+
+    fun getEvents(parentActivity: Activity, startDate: Long, endDate: Long): List<EventDetail> {
 
         val evts = ArrayList<EventDetail>()
 
@@ -72,10 +93,7 @@ class EventDetailService private constructor() {
             }
             val selection = "(${CalendarContract.Events.CALENDAR_ID} = ? and ${CalendarContract.Events.DTSTART} >= ? and ${CalendarContract.Events.DTSTART} < ?)"
             //val selectionArgs = arrayOf(activityCalendar)
-            val numberOfMillisInADay = 24 * 60 * 60 * 1000
-            val currentDateTime = currentDate.time
-            val nextDayAfterCurrentDateTime = currentDateTime + numberOfMillisInADay
-            val selectionArgs = arrayOf(activityCalendarDetail.id.toString(), currentDateTime.toString(), nextDayAfterCurrentDateTime.toString())
+            val selectionArgs = arrayOf(activityCalendarDetail.id.toString(), startDate.toString(), endDate.toString())
 
             // Submit the query and get a Cursor object back.
             try {
@@ -181,6 +199,18 @@ class EventDetailService private constructor() {
      */
     fun getTagsActivity(parentActivity: Activity): Map<String, Long> {
         val events = getEvents(parentActivity)
+        return computeEventToGetTags(events)
+    }
+
+    /**
+     * Get for each tag of a day of the week the sum of all seconds spent in all events with this tag
+     */
+    fun getWeekTagsActivity(parentActivity: Activity, week: Int, year: Int): Map<String, Long> {
+        val events = getEventsOfWeek(parentActivity, week, year)
+        return computeEventToGetTags(events)
+    }
+
+    fun computeEventToGetTags(events: List<EventDetail>) : Map<String, Long> {
         val tags = events.flatMap { it.description.tags }.distinct()
         val tagsActivity = tags.map { tag ->
             tag to events.filter { it.description.tags.contains(tag) }.fold(0L) { sumOfActivity : Long, eventDetail ->

@@ -18,12 +18,16 @@ import android.content.Intent
 import android.support.v7.widget.ThemedSpinnerAdapter
 import android.content.res.Resources.Theme
 import android.support.design.widget.NavigationView
+import android.support.design.widget.TextInputEditText
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.CardView
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.*
 import org.didong.didong.events.DateSelectionViewHolder
 import org.didong.didong.events.EventDetailService
+import java.text.ParseException
 import java.util.*
 
 class ReportActivity : AppCompatActivity() {
@@ -156,6 +160,64 @@ class ReportActivity : AppCompatActivity() {
                         }
                 )
                 dayReport
+            } else if (arg == 2) {
+                val weekReport = inflater!!.inflate(R.layout.fragment_report_week, container, false)
+                val itemList = weekReport.findViewById(R.id.tagActivityList) as ExpandableListView
+                val cal = Calendar.getInstance()
+                var year = cal.get(Calendar.YEAR)
+                var week = cal.get(Calendar.WEEK_OF_YEAR)
+                val tagsActivity = evtService.getWeekTagsActivity(this.activity, week, year)
+                itemList.setAdapter(ReportListAdapter(tagsActivity))
+                tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
+                    itemList.expandGroup(index)
+                }
+                val weekInput = weekReport.findViewById(R.id.week) as TextInputEditText
+                weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
+                weekInput.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(newText: CharSequence?, startPos: Int, endPos: Int, length: Int) {
+                        val weekStr = newText.toString()
+                        try {
+                            week = weekStr.toInt()
+                            val tagsActivity = evtService.getWeekTagsActivity(this@PlaceholderFragment.activity, week, year)
+                            itemList.setAdapter(ReportListAdapter(tagsActivity))
+                            tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
+                                itemList.expandGroup(index)
+                            }
+                        } catch(parseException: ParseException) {
+                            // Do nothing because the week input could be edited and partial
+                        }
+                    }
+                })
+                val yearInput = weekReport.findViewById(R.id.year) as TextInputEditText
+                yearInput.setText(year.toString(), TextView.BufferType.EDITABLE)
+                yearInput.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(newText: CharSequence?, startPos: Int, endPos: Int, length: Int) {
+                        val yearStr = newText.toString()
+                        try {
+                            week = yearStr.toInt()
+                            val tagsActivity = evtService.getWeekTagsActivity(this@PlaceholderFragment.activity, week, year)
+                            itemList.setAdapter(ReportListAdapter(tagsActivity))
+                            tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
+                                itemList.expandGroup(index)
+                            }
+                        } catch(parseException: ParseException) {
+                            // Do nothing because the week input could be edited and partial
+                        }
+                    }
+                })
+                weekReport
             } else {
                 val notYetImplementedReport = inflater!!.inflate(R.layout.fragment_report, container, false)
                 val textView = notYetImplementedReport.findViewById(R.id.section_label) as TextView
