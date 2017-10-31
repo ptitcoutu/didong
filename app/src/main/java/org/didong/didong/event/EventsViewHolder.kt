@@ -1,8 +1,7 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
 import android.app.Activity
 import android.support.v7.widget.RecyclerView
-import android.util.EventLog
 import android.view.View
 import android.widget.*
 import org.didong.didong.R

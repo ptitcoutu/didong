@@ -1,4 +1,4 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
 import android.app.Activity
 import android.database.Cursor

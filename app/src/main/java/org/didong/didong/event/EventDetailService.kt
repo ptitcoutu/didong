@@ -1,10 +1,11 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
 import android.app.Activity
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.CalendarContract
 import android.support.design.widget.Snackbar
+import android.util.Log
 import org.didong.didong.DataChangeEventListener
 import org.didong.didong.R
 import java.text.SimpleDateFormat
@@ -14,9 +15,6 @@ import java.util.*
  * Created by Vincent Couturier on 02/07/2017.
  */
 class EventDetailService private constructor() {
-    init {
-        println("This ($this) is a singleton")
-    }
 
     private object Holder {
         val INSTANCE = EventDetailService()
@@ -26,6 +24,7 @@ class EventDetailService private constructor() {
         val instance: EventDetailService by lazy { Holder.INSTANCE }
     }
 
+    val LOG_TAG = "org.didong.didong"
     val calendarService = CalendarService.instance
 
     // Projection array. Creating indices for this array instead of doing
@@ -56,16 +55,16 @@ class EventDetailService private constructor() {
 
     fun getEventsOfWeek(parentActivity: Activity, week: Int, year: Int): List<EventDetail> {
         val cal = Calendar.getInstance()
-        cal.set(Calendar.YEAR, year)
-        cal.set(Calendar.WEEK_OF_YEAR, week)
+        cal.clear()
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
         cal.set(Calendar.HOUR_OF_DAY, 0)
         cal.set(Calendar.MINUTE, 0)
         cal.set(Calendar.SECOND, 0)
-        val beginOffirstDayOfWeek = cal.timeInMillis
-        cal.set(Calendar.WEEK_OF_YEAR, week+1)
-        val beginOffNextDayAfterLastDayOfWeek = cal.timeInMillis
-        return getEvents(parentActivity, beginOffirstDayOfWeek, beginOffNextDayAfterLastDayOfWeek);
+        cal.set(Calendar.WEEK_OF_YEAR, week)
+        cal.set(Calendar.YEAR, year)
+        val beginOfFirstDayOfWeek = cal.timeInMillis
+        val beginOfNextDayAfterLastDayOfWeek = beginOfFirstDayOfWeek + 7 * numberOfMillisInADay
+        return getEvents(parentActivity, beginOfFirstDayOfWeek, beginOfNextDayAfterLastDayOfWeek);
     }
 
     fun getEvents(parentActivity: Activity): List<EventDetail> {
@@ -75,7 +74,7 @@ class EventDetailService private constructor() {
     }
 
     fun getEvents(parentActivity: Activity, startDate: Long, endDate: Long): List<EventDetail> {
-
+        println("getEvents from $startDate (${Date(startDate)}) to $endDate  (${Date(endDate)})")
         val evts = ArrayList<EventDetail>()
 
         val activityCalendar = calendarService.getActivityCalendar(parentActivity)
@@ -92,6 +91,7 @@ class EventDetailService private constructor() {
                 return evts;
             }
             val selection = "(${CalendarContract.Events.CALENDAR_ID} = ? and ${CalendarContract.Events.DTSTART} >= ? and ${CalendarContract.Events.DTSTART} < ?)"
+
             //val selectionArgs = arrayOf(activityCalendar)
             val selectionArgs = arrayOf(activityCalendarDetail.id.toString(), startDate.toString(), endDate.toString())
 
@@ -99,8 +99,10 @@ class EventDetailService private constructor() {
             try {
                 cur = cr.query(uri, EVENT_PROJECTION, selection, selectionArgs, "${CalendarContract.Events.DTSTART} ASC, ${CalendarContract.Events.CALENDAR_ID} ASC")
                 while (cur.moveToNext()) {
+                    println("process event")
                     // Get the field values
                     val evtID = cur.getLong(PROJECTION_ID_INDEX);
+                    println(" evtId : $evtID")
                     val dtStart = cur.getString(PROJECTION_DTSTART_INDEX)
                     //val dtStartLong = dtStart?.toLong()
                     //val startTime = if (dtStartLong != null) Date(dtStartLong) else Date()
@@ -114,7 +116,7 @@ class EventDetailService private constructor() {
                     val calId = cur.getString(PROJECTION_CALENDAR_ID_INDEX)
                     evts.add(EventDetail(id = evtID, calendarId = calId, startTime = dtStart, endTime = dtEnd, title = title, description = EventDescription.fromJson(description)))
                 }
-            } catch (e: SecurityException) {
+            } catch (e: Exception) {
                 Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
                         .setAction("Close", null).show()
             } finally {

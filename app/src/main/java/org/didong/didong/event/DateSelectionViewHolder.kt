@@ -1,19 +1,16 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
 import android.app.Activity
 import android.support.v4.view.GestureDetectorCompat
-import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.EventLog
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
 import org.didong.didong.R
-import com.hootsuite.nachos.NachoTextView
 import org.didong.didong.DataChangeEventListener
 import java.text.ParseException
 import java.text.SimpleDateFormat

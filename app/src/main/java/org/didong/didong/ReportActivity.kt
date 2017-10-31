@@ -1,7 +1,5 @@
 package org.didong.didong
 
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 
@@ -25,8 +23,8 @@ import android.support.v7.widget.CardView
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
-import org.didong.didong.events.DateSelectionViewHolder
-import org.didong.didong.events.EventDetailService
+import org.didong.didong.event.DateSelectionViewHolder
+import org.didong.didong.event.EventDetailService
 import java.text.ParseException
 import java.util.*
 
@@ -181,7 +179,7 @@ class ReportActivity : AppCompatActivity() {
                     }
 
                     override fun onTextChanged(newText: CharSequence?, startPos: Int, endPos: Int, length: Int) {
-                        val weekStr = newText.toString()
+                        val weekStr = if (newText != null) newText.toString() else ""
                         try {
                             week = weekStr.toInt()
                             val tagsActivity = evtService.getWeekTagsActivity(this@PlaceholderFragment.activity, week, year)

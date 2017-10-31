@@ -1,6 +1,5 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
-import android.util.EventLog
 import org.json.JSONArray
 import org.json.JSONObject
 

@@ -14,22 +14,10 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import org.didong.didong.events.EventsRecyclerAdapter
+import org.didong.didong.event.EventsRecyclerAdapter
 import android.content.Intent
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v7.widget.CardView
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.TextView
-import org.didong.didong.events.EventDetailService
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
+import org.didong.didong.event.EventDetailService
 
 
 class MainActivity : AppCompatActivity(), DataChangeEventListener {
