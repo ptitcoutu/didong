@@ -23,6 +23,11 @@ import android.support.v7.widget.CardView
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
+import com.github.salomonbrys.kodein.android.FragmentInjector
+import com.github.salomonbrys.kodein.android.KodeinAppCompatActivity
+import com.github.salomonbrys.kodein.instance
 import org.didong.didong.event.DateSelectionViewHolder
 import org.didong.didong.event.EventDetailService
 import java.text.ParseException
@@ -128,11 +133,14 @@ class ReportActivity : AppCompatActivity() {
     /**
      * A placeholder fragment containing a simple view.
      */
-    class PlaceholderFragment : Fragment() {
-        val evtService = EventDetailService.instance
+    class PlaceholderFragment : Fragment(), FragmentInjector {
+        override val injector: KodeinInjector = KodeinInjector()
+
+        val evtService: EventDetailService by injector.instance()
 
         override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
+            initializeInjector()
             val arg = arguments.getInt(ARG_SECTION_NUMBER)
             val rootView = if (arg == 1) {
                 val dayReport = inflater!!.inflate(R.layout.fragment_report_day, container, false)
@@ -143,7 +151,7 @@ class ReportActivity : AppCompatActivity() {
                     itemList.expandGroup(index)
                 }
                 val dateCard = dayReport.findViewById(R.id.currentdate_card) as CardView
-                val dateSelectionViewHolder = DateSelectionViewHolder(this.activity, dateCard)
+                val dateSelectionViewHolder = DateSelectionViewHolder(this.activity, injector, dateCard)
                 evtService.listeners.add(
                         object : DataChangeEventListener {
                             override fun dataChange(evt: Any) {
@@ -223,6 +231,11 @@ class ReportActivity : AppCompatActivity() {
                 notYetImplementedReport
             }
             return rootView
+        }
+
+        override fun onDestroy() {
+            destroyInjector()
+            super.onDestroy()
         }
 
         companion object {

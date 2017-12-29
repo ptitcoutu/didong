@@ -12,17 +12,9 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-class CalendarService private constructor() {
-    init {
-        println("This ($this) is a singleton")
-    }
-
-    private object Holder {
-        val INSTANCE = CalendarService()
-    }
+class CalendarService() {
 
     companion object {
-        val instance: CalendarService by lazy { Holder.INSTANCE }
         val ACTIVITY_CALENDAR_PREF_NAME = "activity_calendar"
     }
 

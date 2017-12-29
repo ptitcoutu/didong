@@ -23,14 +23,17 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:25.4.+'
+    implementation 'com.github.salomonbrys.kodein:kodein:4.1.0'
+    implementation 'com.github.salomonbrys.kodein:kodein-android:4.1.0'
+
     testImplementation 'junit:junit:4.12'
-    testImplementation "com.nhaarman:mockito-kotlin:1.1.0"
+    testImplementation 'com.nhaarman:mockito-kotlin:1.1.0'
     testImplementation 'org.amshove.kluent:kluent:1.14'
 
     implementation 'com.android.support:design:25.4.+'
@@ -38,7 +41,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:25.4.+'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
-    implementation "com.hootsuite.android:nachos:1.1.1"
+    implementation 'com.hootsuite.android:nachos:1.1.1'
     implementation 'com.android.support:support-v4:25.4.0'
     implementation 'com.android.support:support-vector-drawable:25.4.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

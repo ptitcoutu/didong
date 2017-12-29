@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import org.didong.didong.R
 import android.widget.ArrayAdapter
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.instance
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -15,9 +17,9 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 04/06/2017.
  */
-public class EventsRecyclerAdapter(val parentActivity: Activity) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    val evtService = EventDetailService.instance
-    var calendarEvents = evtService.getEvents(parentActivity)
+public class EventsRecyclerAdapter(val parentActivity: Activity, val injector: KodeinInjector) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    val evtService: EventDetailService by injector.instance()
+    private var calendarEvents = evtService.getEvents(parentActivity)
     val EVENT_DETAIL = 0
     val DATE_SELECTION = 1
 
@@ -31,12 +33,12 @@ public class EventsRecyclerAdapter(val parentActivity: Activity) : RecyclerView.
             when (viewType) {
                 DATE_SELECTION -> {
                     val v: View = LayoutInflater.from(viewGroup.context).inflate(R.layout.date_selection, viewGroup, false)
-                    val viewHolder = DateSelectionViewHolder(parentActivity, v)
+                    val viewHolder = DateSelectionViewHolder(parentActivity, injector, v)
                     return viewHolder
                 }
                 EVENT_DETAIL -> {
                     val v: View = LayoutInflater.from(viewGroup.context).inflate(R.layout.event_card, viewGroup, false)
-                    val viewHolder = EventsViewHolder(parentActivity, v)
+                    val viewHolder = EventsViewHolder(parentActivity, injector, v)
                     return viewHolder
                 }
                 else -> {

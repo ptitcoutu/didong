@@ -12,6 +12,9 @@ import android.os.Bundle
 import android.preference.*
 import android.text.TextUtils
 import android.view.MenuItem
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.android.FragmentInjector
+import com.github.salomonbrys.kodein.instance
 import org.didong.didong.event.CalendarService
 
 /**
@@ -71,11 +74,14 @@ class SettingsActivity : AppCompatPreferenceActivity() {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    class GeneralPreferenceFragment : PreferenceFragment() {
-        val calendarService = CalendarService.instance
+    class GeneralPreferenceFragment : PreferenceFragment(), FragmentInjector {
+        override val injector = KodeinInjector()
+
+        val calendarService: CalendarService by injector.instance()
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
+            initializeInjector()
             addPreferencesFromResource(R.xml.pref_general)
             setHasOptionsMenu(true)
 
@@ -93,6 +99,11 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 return true
             }
             return super.onOptionsItemSelected(item)
+        }
+
+        override fun onDestroy() {
+            destroyInjector()
+            super.onDestroy()
         }
     }
 

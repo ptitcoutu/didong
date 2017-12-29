@@ -6,6 +6,8 @@ import android.database.Cursor
 import android.provider.CalendarContract
 import android.support.design.widget.Snackbar
 import android.util.Log
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.instance
 import org.didong.didong.DataChangeEventListener
 import org.didong.didong.R
 import java.text.SimpleDateFormat
@@ -14,18 +16,9 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-class EventDetailService private constructor() {
-
-    private object Holder {
-        val INSTANCE = EventDetailService()
-    }
-
-    companion object {
-        val instance: EventDetailService by lazy { Holder.INSTANCE }
-    }
+class EventDetailService(val calendarService: CalendarService) {
 
     val LOG_TAG = "org.didong.didong"
-    val calendarService = CalendarService.instance
 
     // Projection array. Creating indices for this array instead of doing
     // dynamic lookups improves performance.
@@ -74,7 +67,7 @@ class EventDetailService private constructor() {
     }
 
     fun getEvents(parentActivity: Activity, startDate: Long, endDate: Long): List<EventDetail> {
-        println("getEvents from $startDate (${Date(startDate)}) to $endDate  (${Date(endDate)})")
+        //println("getEvents from $startDate (${Date(startDate)}) to $endDate  (${Date(endDate)})")
         val evts = ArrayList<EventDetail>()
 
         val activityCalendar = calendarService.getActivityCalendar(parentActivity)
