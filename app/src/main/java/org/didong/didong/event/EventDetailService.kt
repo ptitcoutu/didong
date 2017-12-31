@@ -16,7 +16,7 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-class EventDetailService(val calendarService: CalendarService) {
+open class EventDetailService(val calendarService: CalendarService) {
 
     val LOG_TAG = "org.didong.didong"
 
@@ -44,7 +44,7 @@ class EventDetailService(val calendarService: CalendarService) {
     val listeners: MutableList<DataChangeEventListener> = mutableListOf()
     val dateFormat = SimpleDateFormat("yyyy-MM-dd")
     var currentDate: Date = dateFormat.parse(dateFormat.format(Date()))
-    val numberOfMillisInADay = 24 * 60 * 60 * 1000
+    val numberOfMillisInADay = 24 /* days */ * 60 /* minutes */ * 60 /* seconds */ * 1000 /* milliseconds */
 
     fun getEventsOfWeek(parentActivity: Activity, week: Int, year: Int): List<EventDetail> {
         val cal = Calendar.getInstance()

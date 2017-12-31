@@ -12,7 +12,7 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-class CalendarService() {
+open class CalendarService() {
 
     companion object {
         val ACTIVITY_CALENDAR_PREF_NAME = "activity_calendar"
@@ -45,7 +45,7 @@ class CalendarService() {
 
     val listeners: MutableList<DataChangeEventListener> = mutableListOf()
 
-    fun getActivityCalendar(parentActivity: Activity): String {
+    open fun getActivityCalendar(parentActivity: Activity): String {
         return PreferenceManager.getDefaultSharedPreferences(parentActivity).getString(ACTIVITY_CALENDAR_PREF_NAME, "")
     }
 
