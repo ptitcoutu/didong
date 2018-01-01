@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <EditText
         android:id="@+id/editText"
@@ -11,6 +11,8 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="date"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="16dp" />
 
@@ -19,6 +21,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="AutoCompleteTextView"
+        app:layout_constraintTop_toTopOf="@id/editText"
+        app:layout_constraintLeft_toRightOf="@id/editText"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="81dp" />
 
@@ -27,6 +31,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="MultiAutoCompleteTextView"
+        app:layout_constraintTop_toTopOf="@id/autoCompleteTextView"
+        app:layout_constraintLeft_toRightOf="@id/autoCompleteTextView"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="144dp" />
 </android.support.constraint.ConstraintLayout>

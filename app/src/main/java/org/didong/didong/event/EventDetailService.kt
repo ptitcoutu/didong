@@ -10,14 +10,15 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.instance
 import org.didong.didong.DataChangeEventListener
 import org.didong.didong.R
+import org.didong.didong.gui.UIService
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-open class EventDetailService(val calendarService: CalendarService) {
-
+open class EventDetailService(val calendarService: CalendarService, val uiService: UIService) {
+    val NO_CALENDAR_SELECTED = "A calendar must be selected in app settings"
     val LOG_TAG = "org.didong.didong"
 
     // Projection array. Creating indices for this array instead of doing
@@ -79,8 +80,7 @@ open class EventDetailService(val calendarService: CalendarService) {
             val uri = CALENDAR_EVENTS_URI
             val activityCalendarDetail = calendarService.getActivityCalendarDetail(parentActivity)
             if (activityCalendarDetail == null) {
-                Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Activity calendar must be selected in app settings", Snackbar.LENGTH_LONG)
-                        .setAction("Close", null).show()
+                manageNoCalendarSelected(parentActivity)
                 return evts;
             }
             val selection = "(${CalendarContract.Events.CALENDAR_ID} = ? and ${CalendarContract.Events.DTSTART} >= ? and ${CalendarContract.Events.DTSTART} < ?)"
@@ -110,16 +110,14 @@ open class EventDetailService(val calendarService: CalendarService) {
                     evts.add(EventDetail(id = evtID, calendarId = calId, startTime = dtStart, endTime = dtEnd, title = title, description = EventDescription.fromJson(description)))
                 }
             } catch (e: Exception) {
-                Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
-                        .setAction("Close", null).show()
+                manageError(parentActivity, e)
             } finally {
                 if (cur != null) {
                     cur.close()
                 }
             }
         } else {
-            Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "You have to set a calendar in the app settings", Snackbar.LENGTH_LONG)
-                    .setAction("Close", null).show()
+            manageNoCalendarSelected(parentActivity)
         }
         return evts
     }
@@ -144,13 +142,19 @@ open class EventDetailService(val calendarService: CalendarService) {
                 val evtURI = cr.insert(CALENDAR_EVENTS_URI, eventData)
                 notifyChange(evtURI)
             } else {
-                Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "A calendar must be selected in app settings", Snackbar.LENGTH_LONG)
-                        .setAction("Close", null).show()
+                manageNoCalendarSelected(parentActivity)
             }
         } catch (e: Exception) {
-            Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
-                    .setAction("Close", null).show()
+            manageError(parentActivity, e)
         }
+    }
+
+    private fun manageError(activity: Activity, e: Exception) {
+        uiService.showError(activity.findViewById(R.id.drawer_layout), e)
+    }
+
+    private fun manageNoCalendarSelected(activity: Activity) {
+        uiService.showMessage(activity.findViewById(R.id.drawer_layout), NO_CALENDAR_SELECTED)
     }
 
     fun cloneEvent(parentActivity: Activity, evtDetail: EventDetail) {
@@ -167,8 +171,7 @@ open class EventDetailService(val calendarService: CalendarService) {
             val evtURI = cr.insert(CALENDAR_EVENTS_URI, eventData)
             notifyChange(evtURI)
         } catch (e: Exception) {
-            Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
-                    .setAction("Close", null).show()
+            manageError(parentActivity, e)
         }
     }
 
@@ -184,8 +187,7 @@ open class EventDetailService(val calendarService: CalendarService) {
             val evtURI = cr.update(CALENDAR_EVENTS_URI, eventData, "(${CalendarContract.Events._ID} = ?)", arrayOf(evtDetail.id.toString()))
             notifyChange(evtURI)
         } catch (e: Exception) {
-            Snackbar.make(parentActivity.findViewById(R.id.drawer_layout), "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
-                    .setAction("Close", null).show()
+            manageError(parentActivity, e)
         }
     }
 
@@ -205,16 +207,16 @@ open class EventDetailService(val calendarService: CalendarService) {
         return computeEventToGetTags(events)
     }
 
-    fun computeEventToGetTags(events: List<EventDetail>) : Map<String, Long> {
+    fun computeEventToGetTags(events: List<EventDetail>): Map<String, Long> {
         val tags = events.flatMap { it.description.tags }.distinct()
         val tagsActivity = tags.map { tag ->
-            tag to events.filter { it.description.tags.contains(tag) }.fold(0L) { sumOfActivity : Long, eventDetail ->
-                if(eventDetail.startTime != null && eventDetail.startTime != ""&& (eventDetail.description.started || eventDetail.startTime != eventDetail.endTime) ) {
+            tag to events.filter { it.description.tags.contains(tag) }.fold(0L) { sumOfActivity: Long, eventDetail ->
+                if (eventDetail.startTime != null && eventDetail.startTime != "" && (eventDetail.description.started || eventDetail.startTime != eventDetail.endTime)) {
                     val startTime = eventDetail.startTime.toLong()
                     // If the event is not terminated the endTime is evaluated to now otherwise to the saved endTime of the event
-                    val endTime : Long = if(eventDetail.description?.started) Date().time else eventDetail.endTime!!.toLong()
-                    val elapse = endTime-startTime
-                    sumOfActivity+elapse
+                    val endTime: Long = if (eventDetail.description?.started) Date().time else eventDetail.endTime!!.toLong()
+                    val elapse = endTime - startTime
+                    sumOfActivity + elapse
                 } else {
                     sumOfActivity
                 }
