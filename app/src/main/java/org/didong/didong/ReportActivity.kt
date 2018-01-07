@@ -24,19 +24,19 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
 import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
-import com.github.salomonbrys.kodein.android.FragmentInjector
-import com.github.salomonbrys.kodein.android.KodeinAppCompatActivity
+import com.github.salomonbrys.kodein.android.*
 import com.github.salomonbrys.kodein.instance
 import org.didong.didong.event.DateSelectionViewHolder
 import org.didong.didong.event.EventDetailService
 import java.text.ParseException
 import java.util.*
 
-class ReportActivity : AppCompatActivity() {
+class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
+    override val injector: KodeinInjector = KodeinInjector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeInjector()
         setContentView(R.layout.activity_report)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
@@ -72,6 +72,10 @@ class ReportActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        destroyInjector()
+        super.onDestroy()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -133,7 +137,7 @@ class ReportActivity : AppCompatActivity() {
     /**
      * A placeholder fragment containing a simple view.
      */
-    class PlaceholderFragment : Fragment(), FragmentInjector {
+    class PlaceholderFragment : Fragment(), SupportFragmentInjector {
         override val injector: KodeinInjector = KodeinInjector()
 
         val evtService: EventDetailService by injector.instance()
