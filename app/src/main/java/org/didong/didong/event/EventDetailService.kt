@@ -17,7 +17,7 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-open class EventDetailService(val calendarService: CalendarService, val uiService: UIService) {
+class EventDetailService(val calendarService: CalendarService, val uiService: UIService) {
     val NO_CALENDAR_SELECTED = "A calendar must be selected in app settings"
     val LOG_TAG = "org.didong.didong"
 
