@@ -161,7 +161,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                         object : DataChangeEventListener {
                             override fun dataChange(evt: Any) {
                                 if (evt is Date) {
-                                    val tagsActivity = evtService.getTagsActivity(this@PlaceholderFragment.activity)
+                                    val tagsActivity = evtService.getTagsActivity(this@PlaceholderFragment.parentActivity)
                                     itemList.setAdapter(ReportListAdapter(tagsActivity))
                                     tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
                                         itemList.expandGroup(index)
@@ -177,7 +177,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 val cal = Calendar.getInstance()
                 var year = cal.get(Calendar.YEAR)
                 var week = cal.get(Calendar.WEEK_OF_YEAR)
-                val tagsActivity = evtService.getWeekTagsActivity(this.activity, week, year)
+                val tagsActivity = evtService.getWeekTagsActivity(this.parentActivity, week, year)
                 itemList.setAdapter(ReportListAdapter(tagsActivity))
                 tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
                     itemList.expandGroup(index)
@@ -253,7 +253,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
         }
 
         fun processWeek(week : Int, year: Int, itemList: ExpandableListView) {
-            val tagsActivity = evtService.getWeekTagsActivity(this@PlaceholderFragment.activity, week, year)
+            val tagsActivity = evtService.getWeekTagsActivity(this@PlaceholderFragment.parentActivity, week, year)
             itemList.setAdapter(ReportListAdapter(tagsActivity))
             tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
                 itemList.expandGroup(index)

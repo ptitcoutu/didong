@@ -67,7 +67,7 @@
         android:id="@+id/tagActivityList"
         style="@android:style/Widget.ExpandableListView"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="5000dp"
         android:layout_weight="1"
         android:scrollbars="vertical" />
 
