@@ -16,7 +16,7 @@ class ReportListAdapter(val activityByTag: Map<String, Long>) : BaseExpandableLi
     val tags : List<String>
 
     init {
-        tags = activityByTag.keys.toList()
+        tags = activityByTag.asIterable().sortedBy { -it.value }.map { it.key }
     }
 
     /**
