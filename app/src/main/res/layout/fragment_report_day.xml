@@ -1,22 +1,25 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/verticalLayout"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    tools:context="org.didong.didong.ReportActivity$PlaceholderFragment">
-    <include
-        android:id="@+id/currentdate_card"
-        layout="@layout/date_selection" />
+    android:layout_height="match_parent" android:layout_width="match_parent">
 
-    <ExpandableListView
-        android:id="@+id/tagActivityList"
-        style="@android:style/Widget.ExpandableListView"
-        android:layout_width="match_parent"
-        android:layout_height="500dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical" />
+    <LinearLayout
+        android:id="@+id/verticalLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        tools:context="org.didong.didong.ReportActivity$PlaceholderFragment">
+
+        <include
+            android:id="@+id/currentdate_card"
+            layout="@layout/date_selection" />
+
+        <ExpandableListView
+            android:id="@+id/tagActivityList"
+            style="@android:style/Widget.ExpandableListView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

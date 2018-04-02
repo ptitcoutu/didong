@@ -3,9 +3,6 @@ package org.didong.didong.event
 import android.app.Activity
 import android.content.ContentResolver
 import android.database.Cursor
-import android.support.design.widget.Snackbar
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.nhaarman.mockito_kotlin.never
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

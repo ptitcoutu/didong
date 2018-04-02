@@ -61,6 +61,18 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
         return getEvents(parentActivity, beginOfFirstDayOfWeek, beginOfNextDayAfterLastDayOfWeek);
     }
 
+    fun getLastWeekNumber(year: Int): Int {
+        val cal = Calendar.getInstance()
+        cal.clear()
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.WEEK_OF_YEAR, 3)
+        cal.set(Calendar.YEAR, year)
+        return cal.getMaximum(Calendar.WEEK_OF_YEAR)
+    }
+
     fun getEvents(parentActivity: Activity): List<EventDetail> {
         val currentDateTime = currentDate.time
         val nextDayAfterCurrentDateTime = currentDateTime + numberOfMillisInADay
@@ -209,7 +221,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
 
     fun computeEventToGetTags(events: List<EventDetail>): Map<String, Long> {
         val tags = events.flatMap { it.description.tags }.distinct()
-        val tagsActivity = tags.map { tag ->
+        val tagsActivity = tags.map { it.trim() }.distinct().map { tag ->
             tag to events.filter { it.description.tags.contains(tag) }.fold(0L) { sumOfActivity: Long, eventDetail ->
                 if (eventDetail.startTime != null && eventDetail.startTime != "" && (eventDetail.description.started || eventDetail.startTime != eventDetail.endTime)) {
                     val startTime = eventDetail.startTime.toLong()

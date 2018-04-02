@@ -13,6 +13,8 @@ import android.preference.*
 import android.text.TextUtils
 import android.view.MenuItem
 import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.android.ActivityInjector
+import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
 import com.github.salomonbrys.kodein.android.FragmentInjector
 import com.github.salomonbrys.kodein.instance
 import org.didong.didong.event.CalendarService
@@ -28,11 +30,18 @@ import org.didong.didong.event.CalendarService
    * Android Design: Settings](http://developer.android.com/design/patterns/settings.html) for design guidelines and the [Settings
    * API Guide](http://developer.android.com/guide/topics/ui/settings.html) for more information on developing a Settings UI.
  */
-class SettingsActivity : AppCompatPreferenceActivity() {
+class SettingsActivity : AppCompatPreferenceActivity(), ActivityInjector {
+    override val injector: KodeinInjector = KodeinInjector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeInjector()
         setupActionBar()
+    }
+
+    override fun onDestroy() {
+        destroyInjector()
+        super.onDestroy()
     }
 
     /**
