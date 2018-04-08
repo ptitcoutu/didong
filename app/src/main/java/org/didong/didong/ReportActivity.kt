@@ -28,6 +28,7 @@ import com.github.salomonbrys.kodein.android.*
 import com.github.salomonbrys.kodein.instance
 import org.didong.didong.event.DateSelectionViewHolder
 import org.didong.didong.event.EventDetailService
+import org.didong.didong.gui.expandFirstLevelChildren
 import java.text.ParseException
 import java.util.*
 
@@ -137,35 +138,33 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
     /**
      * A placeholder fragment containing a simple view.
      */
-    class PlaceholderFragment(val parentActivity: ReportActivity) : Fragment(), SupportFragmentInjector {
+    class PlaceholderFragment() : Fragment(), SupportFragmentInjector {
 
         override val injector: KodeinInjector = KodeinInjector()
 
+        var parentActivity: ReportActivity? = null
         val evtService: EventDetailService by injector.instance()
 
         override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
             initializeInjector()
+            val currActivity = parentActivity?:this.activity as ReportActivity
             val arg = arguments.getInt(ARG_SECTION_NUMBER)
             val rootView = if (arg == 1) {
                 val dayReport = inflater!!.inflate(R.layout.fragment_report_day, container, false)
                 val itemList = dayReport.findViewById(R.id.tagActivityList) as ExpandableListView
-                val tagsActivity = evtService.getTagsActivity(this.activity)
+                val tagsActivity = evtService.getTagsActivity(currActivity)
                 itemList.setAdapter(ReportListAdapter(tagsActivity))
-                tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
-                    itemList.expandGroup(index)
-                }
+                itemList.expandFirstLevelChildren()
                 val dateCard = dayReport.findViewById(R.id.currentdate_card) as CardView
-                val dateSelectionViewHolder = DateSelectionViewHolder(this.activity, injector, dateCard)
+                val dateSelectionViewHolder = DateSelectionViewHolder(currActivity, injector, dateCard)
                 evtService.listeners.add(
                         object : DataChangeEventListener {
                             override fun dataChange(evt: Any) {
                                 if (evt is Date) {
-                                    val tagsActivity = evtService.getTagsActivity(this@PlaceholderFragment.parentActivity)
+                                    val tagsActivity = evtService.getTagsActivity(currActivity)
                                     itemList.setAdapter(ReportListAdapter(tagsActivity))
-                                    tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
-                                        itemList.expandGroup(index)
-                                    }
+                                    itemList.expandFirstLevelChildren()
                                 }
                             }
                         }
@@ -177,11 +176,9 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 val cal = Calendar.getInstance()
                 var year = cal.get(Calendar.YEAR)
                 var week = cal.get(Calendar.WEEK_OF_YEAR)
-                val tagsActivity = evtService.getWeekTagsActivity(this.parentActivity, week, year)
+                val tagsActivity = evtService.getWeekTagsActivity(currActivity, week, year)
                 itemList.setAdapter(ReportListAdapter(tagsActivity))
-                tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
-                    itemList.expandGroup(index)
-                }
+                itemList.expandFirstLevelChildren()
                 val weekInput = weekReport.findViewById(R.id.week) as TextInputEditText
                 weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
                 weekInput.addTextChangedListener(object : TextWatcher {
@@ -253,11 +250,10 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
         }
 
         fun processWeek(week : Int, year: Int, itemList: ExpandableListView) {
-            val tagsActivity = evtService.getWeekTagsActivity(this@PlaceholderFragment.parentActivity, week, year)
+            val currActivity = this@PlaceholderFragment.parentActivity?:activity
+            val tagsActivity = evtService.getWeekTagsActivity(currActivity, week, year)
             itemList.setAdapter(ReportListAdapter(tagsActivity))
-            tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
-                itemList.expandGroup(index)
-            }
+            itemList.expandFirstLevelChildren()
         }
 
         override fun onDestroy() {
@@ -277,7 +273,8 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
              * number.
              */
             fun newInstance(parentActivity : ReportActivity, sectionNumber: Int): PlaceholderFragment {
-                val fragment = PlaceholderFragment(parentActivity)
+                val fragment = PlaceholderFragment()
+                fragment.parentActivity = parentActivity
                 val args = Bundle()
                 args.putInt(ARG_SECTION_NUMBER, sectionNumber)
                 fragment.arguments = args
