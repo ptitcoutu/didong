@@ -86,7 +86,7 @@ class DateSelectionViewHolder : RecyclerView.ViewHolder {
                 }
             }
 
-            val goToday = itemView.findViewById(R.id.goToday)
+            val goToday = itemView.findViewById(R.id.goToday) as Button
             goToday.setOnClickListener {
                 initEditTextWithTodaysDate(currentDate, dateFormat)
             }

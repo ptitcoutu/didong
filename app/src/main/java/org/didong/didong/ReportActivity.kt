@@ -154,7 +154,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 val dayReport = inflater!!.inflate(R.layout.fragment_report_day, container, false)
                 val itemList = dayReport.findViewById(R.id.tagActivityList) as ExpandableListView
                 val tagsActivity = evtService.getTagsActivity(currActivity)
-                itemList.setAdapter(ReportListAdapter(tagsActivity))
+                itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
                 itemList.expandFirstLevelChildren()
                 val dateCard = dayReport.findViewById(R.id.currentdate_card) as CardView
                 val dateSelectionViewHolder = DateSelectionViewHolder(currActivity, injector, dateCard)
@@ -163,7 +163,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                             override fun dataChange(evt: Any) {
                                 if (evt is Date) {
                                     val tagsActivity = evtService.getTagsActivity(currActivity)
-                                    itemList.setAdapter(ReportListAdapter(tagsActivity))
+                                    itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
                                     itemList.expandFirstLevelChildren()
                                 }
                             }
@@ -177,7 +177,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 var year = cal.get(Calendar.YEAR)
                 var week = cal.get(Calendar.WEEK_OF_YEAR)
                 val tagsActivity = evtService.getWeekTagsActivity(currActivity, week, year)
-                itemList.setAdapter(ReportListAdapter(tagsActivity))
+                itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
                 itemList.expandFirstLevelChildren()
                 val weekInput = weekReport.findViewById(R.id.week) as TextInputEditText
                 weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
@@ -217,7 +217,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                         }
                     }
                 })
-                val nextWeekButton = weekReport.findViewById(R.id.nextWeek)
+                val nextWeekButton = weekReport.findViewById(R.id.nextWeek) as Button
                 nextWeekButton.setOnClickListener({ view ->
                     week++
                     if(week > evtService.getLastWeekNumber(year)) {
@@ -228,7 +228,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                     weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
                     processWeek(week, year, itemList)
                 })
-                val previousWeekButton = weekReport.findViewById(R.id.previousWeek)
+                val previousWeekButton = weekReport.findViewById(R.id.previousWeek) as Button
                 previousWeekButton.setOnClickListener({ view ->
                     week--
                     if (week<=0) {
@@ -252,7 +252,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
         fun processWeek(week : Int, year: Int, itemList: ExpandableListView) {
             val currActivity = this@PlaceholderFragment.parentActivity?:activity
             val tagsActivity = evtService.getWeekTagsActivity(currActivity, week, year)
-            itemList.setAdapter(ReportListAdapter(tagsActivity))
+            itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
             itemList.expandFirstLevelChildren()
         }
 

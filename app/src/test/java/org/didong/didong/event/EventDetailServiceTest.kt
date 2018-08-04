@@ -3,9 +3,11 @@ package org.didong.didong.event
 import android.app.Activity
 import android.content.ContentResolver
 import android.database.Cursor
+import android.support.v4.widget.DrawerLayout
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.amshove.kluent.`should equal`
 import org.didong.didong.R
 import org.didong.didong.calendar.CalendarDetail
 import org.didong.didong.gui.UIService
@@ -37,7 +39,7 @@ class EventDetailServiceTest {
         evtDetailService = EventDetailService(calService, uiService)
 
         // drawer layout is mocked
-        every { parentActivity.findViewById(R.id.drawer_layout) } returns mockk()
+        every { parentActivity.findViewById(R.id.drawer_layout) as DrawerLayout } returns mockk()
         contentResolver = mockk();
         every { parentActivity.contentResolver } returns contentResolver
     }
@@ -106,4 +108,19 @@ class EventDetailServiceTest {
         verify(exactly = 0) { uiService.showMessage(any(), any()) }
         verify(exactly = 0) { uiService.showError(any(), any()) }
     }
+
+    @Test
+    fun `computeEventToGetTags should give total duration of events spreaded by tag`() {
+        val evts = listOf(EventDetail(id = 1, calendarId = "1",title = "test 1",
+                description = EventDescription(tags = listOf("dev","play"), started = false),
+                startTime = "1523819378026", endTime = "1523819978026"),
+                EventDetail(id = 2, calendarId = "1",title = "test 2",
+                        description = EventDescription(tags = listOf("test","play"), started = false),
+                        startTime = "1523824378026", endTime = "1523829378026"))
+        val res = evtDetailService.computeEventToGetTags(evts)
+        res["dev"] `should equal` 600000L
+        res["play"] `should equal` 5600000L
+        res["test"] `should equal` 5000000L
+    }
+
 }

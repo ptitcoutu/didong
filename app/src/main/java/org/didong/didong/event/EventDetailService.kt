@@ -10,6 +10,7 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.instance
 import org.didong.didong.DataChangeEventListener
 import org.didong.didong.R
+import org.didong.didong.format
 import org.didong.didong.gui.UIService
 import java.text.SimpleDateFormat
 import java.util.*
@@ -243,5 +244,13 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
 
     fun refreshCurrentEventList(parentActivity: Activity) {
         notifyChange(currentDate)
+    }
+
+    fun fromMilliSecondsToStr(totalMilliseconds: Double): String {
+        val totalSeconds: Double = totalMilliseconds / 1000.0
+        val totalMinutes = totalSeconds / 60.0
+        val totalHours = totalMinutes / 60.0
+        val totalDays = totalHours / 8.0
+        return "${totalSeconds.format(0)} s  / ${totalMinutes.format(2)} mn / ${totalHours.format(2)} h / ${totalDays.format(2)} d"
     }
 }
