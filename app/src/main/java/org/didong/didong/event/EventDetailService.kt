@@ -221,9 +221,10 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
     }
 
     fun computeEventToGetTags(events: List<EventDetail>): Map<String, Long> {
-        val tags = events.flatMap { it.description.tags }.distinct()
-        val tagsActivity = tags.map { it.trim() }.distinct().map { tag ->
-            tag to events.filter { it.description.tags.contains(tag) }.fold(0L) { sumOfActivity: Long, eventDetail ->
+        val tagFilter = { tag: String -> tag.trim().toLowerCase() }
+        val tags = events.flatMap { it.description.tags }.distinct().map(tagFilter).distinct()
+        val tagsActivity = tags.map { tag ->
+            tag to events.filter { it.description.tags.map(tagFilter).contains(tag) }.fold(0L) { sumOfActivity: Long, eventDetail ->
                 if (eventDetail.startTime != null && eventDetail.startTime != "" && (eventDetail.description.started || eventDetail.startTime != eventDetail.endTime)) {
                     val startTime = eventDetail.startTime.toLong()
                     // If the event is not terminated the endTime is evaluated to now otherwise to the saved endTime of the event
