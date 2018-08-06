@@ -7,16 +7,17 @@ import android.graphics.Typeface
 import android.widget.TextView
 import android.content.Context.LAYOUT_INFLATER_SERVICE
 import android.view.LayoutInflater
+import org.didong.didong.event.EventDetailService
 
 
 /**
  * Adapter which agregate event by tags for a day
  */
-class ReportListAdapter(val activityByTag: Map<String, Long>) : BaseExpandableListAdapter() {
+class ReportListAdapter(val evtDetailService: EventDetailService, val activityByTag: Map<String, Long>) : BaseExpandableListAdapter() {
     val tags : List<String>
 
     init {
-        tags = activityByTag.keys.toList()
+        tags = activityByTag.asIterable().sortedBy { -it.value }.map { it.key }
     }
 
     /**
@@ -146,11 +147,9 @@ class ReportListAdapter(val activityByTag: Map<String, Long>) : BaseExpandableLi
 
         val itemDetail = reportItemView
                 .findViewById(R.id.itemDetail) as TextView
-        val totalSeconds = reportItemContent.toDouble() / 1000
-        val totalMinutes = totalSeconds / 60
-        val totalHours = totalMinutes / 60
-        val totalDays = totalHours / 8
-        itemDetail.text = "${totalSeconds.format(0)} s  / ${totalMinutes.format(2)} mn / ${totalHours.format(2)} h / ${totalDays.format(2)} d"
+        val totalMilliseconds = reportItemContent.toDouble()
+
+        itemDetail.text = evtDetailService.fromMilliSecondsToStr(totalMilliseconds)
         return reportItemView
     }
 

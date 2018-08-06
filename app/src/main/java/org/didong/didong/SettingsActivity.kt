@@ -5,19 +5,19 @@ import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
-import android.database.Cursor
-import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.*
-import android.provider.CalendarContract
-import android.support.design.widget.Snackbar
-import android.support.v7.app.ActionBar
 import android.text.TextUtils
 import android.view.MenuItem
-import org.didong.didong.events.CalendarService
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.android.ActivityInjector
+import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
+import com.github.salomonbrys.kodein.android.FragmentInjector
+import com.github.salomonbrys.kodein.instance
+import org.didong.didong.event.CalendarService
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On
@@ -30,11 +30,18 @@ import org.didong.didong.events.CalendarService
    * Android Design: Settings](http://developer.android.com/design/patterns/settings.html) for design guidelines and the [Settings
    * API Guide](http://developer.android.com/guide/topics/ui/settings.html) for more information on developing a Settings UI.
  */
-class SettingsActivity : AppCompatPreferenceActivity() {
+class SettingsActivity : AppCompatPreferenceActivity(), ActivityInjector {
+    override val injector: KodeinInjector = KodeinInjector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeInjector()
         setupActionBar()
+    }
+
+    override fun onDestroy() {
+        destroyInjector()
+        super.onDestroy()
     }
 
     /**
@@ -76,11 +83,14 @@ class SettingsActivity : AppCompatPreferenceActivity() {
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    class GeneralPreferenceFragment : PreferenceFragment() {
-        val calendarService = CalendarService.instance
+    class GeneralPreferenceFragment : PreferenceFragment(), FragmentInjector {
+        override val injector = KodeinInjector()
+
+        val calendarService: CalendarService by injector.instance()
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
+            initializeInjector()
             addPreferencesFromResource(R.xml.pref_general)
             setHasOptionsMenu(true)
 
@@ -98,6 +108,11 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 return true
             }
             return super.onOptionsItemSelected(item)
+        }
+
+        override fun onDestroy() {
+            destroyInjector()
+            super.onDestroy()
         }
     }
 

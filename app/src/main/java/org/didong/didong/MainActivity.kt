@@ -14,29 +14,22 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import org.didong.didong.events.EventsRecyclerAdapter
+import org.didong.didong.event.EventsRecyclerAdapter
 import android.content.Intent
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v7.widget.CardView
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.DatePicker
-import android.widget.EditText
-import android.widget.TextView
-import org.didong.didong.events.EventDetailService
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
+import com.github.salomonbrys.kodein.instance
+import org.didong.didong.event.EventDetailService
 
 
-class MainActivity : AppCompatActivity(), DataChangeEventListener {
+class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActivityInjector {
+    override val injector: KodeinInjector = KodeinInjector()
     var evtRecyclerAdapter: EventsRecyclerAdapter? = null
-    val evtService = EventDetailService.instance
+    val evtService: EventDetailService by injector.instance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeInjector()
         setContentView(R.layout.activity_main)
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) != PackageManager.PERMISSION_GRANTED ||
@@ -64,10 +57,10 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener {
         navigationView.setNavigationItemSelectedListener(MainNavigationListener(this, drawer))
 
         val eventsView = findViewById(R.id.events_view) as RecyclerView
-        evtRecyclerAdapter = EventsRecyclerAdapter(this)
+        evtRecyclerAdapter = EventsRecyclerAdapter(this, injector)
         eventsView.adapter = evtRecyclerAdapter
         eventsView.layoutManager = LinearLayoutManager(this)
-        EventDetailService.instance.listeners.add(this)
+        evtService.listeners.add(this)
     }
 
     override fun dataChange(newObject: Any) {
@@ -102,6 +95,11 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener {
             }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        destroyInjector()
+        super.onDestroy()
     }
 
 }

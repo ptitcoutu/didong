@@ -1,10 +1,11 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
 import android.app.Activity
 import android.support.v7.widget.RecyclerView
-import android.util.EventLog
 import android.view.View
 import android.widget.*
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.instance
 import org.didong.didong.R
 import com.hootsuite.nachos.NachoTextView
 import java.util.*
@@ -14,6 +15,7 @@ import java.util.*
  * Created by Vincent Couturier on 04/06/2017.
  */
 class EventsViewHolder : RecyclerView.ViewHolder {
+    val injector : KodeinInjector
     val itemTitle : EditText
     val tagNachos : NachoTextView
     val startTime : TextView
@@ -22,9 +24,11 @@ class EventsViewHolder : RecyclerView.ViewHolder {
     val cloneButton : Button
     var started : Boolean = false
     var evtDetail : EventDetail? = null
-    var evtDetailService = EventDetailService.instance
+    val evtDetailService: EventDetailService
 
-    constructor(parentActivity: Activity, itemView: View?) : super(itemView){
+    constructor(parentActivity: Activity, parentInjector: KodeinInjector, itemView: View?) : super(itemView){
+        injector = parentInjector
+        evtDetailService = injector.instance<EventDetailService>().value
         itemTitle = itemView?.findViewById(R.id.item_title) as EditText
         tagNachos = itemView?.findViewById(R.id.nacho_text_view) as NachoTextView
         startTime = itemView?.findViewById(R.id.start_time) as TextView

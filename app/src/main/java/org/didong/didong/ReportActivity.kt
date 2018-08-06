@@ -1,7 +1,5 @@
 package org.didong.didong
 
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 
@@ -18,18 +16,28 @@ import android.content.Intent
 import android.support.v7.widget.ThemedSpinnerAdapter
 import android.content.res.Resources.Theme
 import android.support.design.widget.NavigationView
+import android.support.design.widget.TextInputEditText
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.CardView
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.*
-import org.didong.didong.events.DateSelectionViewHolder
-import org.didong.didong.events.EventDetailService
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.android.*
+import com.github.salomonbrys.kodein.instance
+import org.didong.didong.event.DateSelectionViewHolder
+import org.didong.didong.event.EventDetailService
+import org.didong.didong.gui.expandFirstLevelChildren
+import java.text.ParseException
 import java.util.*
 
-class ReportActivity : AppCompatActivity() {
+class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
+    override val injector: KodeinInjector = KodeinInjector()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initializeInjector()
         setContentView(R.layout.activity_report)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
@@ -53,7 +61,7 @@ class ReportActivity : AppCompatActivity() {
                 // When the given dropdown item is selected, show its contents in the
                 // container view.
                 supportFragmentManager.beginTransaction()
-                        .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
+                        .replace(R.id.container, PlaceholderFragment.newInstance(this@ReportActivity, position + 1))
                         .commit()
             }
 
@@ -65,6 +73,10 @@ class ReportActivity : AppCompatActivity() {
 
     }
 
+    override fun onDestroy() {
+        destroyInjector()
+        super.onDestroy()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -126,36 +138,108 @@ class ReportActivity : AppCompatActivity() {
     /**
      * A placeholder fragment containing a simple view.
      */
-    class PlaceholderFragment : Fragment() {
-        val evtService = EventDetailService.instance
+    class PlaceholderFragment() : Fragment(), SupportFragmentInjector {
+
+        override val injector: KodeinInjector = KodeinInjector()
+
+        var parentActivity: ReportActivity? = null
+        val evtService: EventDetailService by injector.instance()
 
         override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
+            initializeInjector()
+            val currActivity = parentActivity?:this.activity as ReportActivity
             val arg = arguments.getInt(ARG_SECTION_NUMBER)
             val rootView = if (arg == 1) {
                 val dayReport = inflater!!.inflate(R.layout.fragment_report_day, container, false)
                 val itemList = dayReport.findViewById(R.id.tagActivityList) as ExpandableListView
-                val tagsActivity = evtService.getTagsActivity(this.activity)
-                itemList.setAdapter(ReportListAdapter(tagsActivity))
-                tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
-                    itemList.expandGroup(index)
-                }
+                val tagsActivity = evtService.getTagsActivity(currActivity)
+                itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
+                itemList.expandFirstLevelChildren()
                 val dateCard = dayReport.findViewById(R.id.currentdate_card) as CardView
-                val dateSelectionViewHolder = DateSelectionViewHolder(this.activity, dateCard)
+                val dateSelectionViewHolder = DateSelectionViewHolder(currActivity, injector, dateCard)
                 evtService.listeners.add(
                         object : DataChangeEventListener {
                             override fun dataChange(evt: Any) {
                                 if (evt is Date) {
-                                    val tagsActivity = evtService.getTagsActivity(this@PlaceholderFragment.activity)
-                                    itemList.setAdapter(ReportListAdapter(tagsActivity))
-                                    tagsActivity.keys.forEachIndexed { index:Int, tag:String ->
-                                        itemList.expandGroup(index)
-                                    }
+                                    val tagsActivity = evtService.getTagsActivity(currActivity)
+                                    itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
+                                    itemList.expandFirstLevelChildren()
                                 }
                             }
                         }
                 )
                 dayReport
+            } else if (arg == 2) {
+                val weekReport = inflater!!.inflate(R.layout.fragment_report_week, container, false)
+                val itemList = weekReport.findViewById(R.id.tagActivityList) as ExpandableListView
+                val cal = Calendar.getInstance()
+                var year = cal.get(Calendar.YEAR)
+                var week = cal.get(Calendar.WEEK_OF_YEAR)
+                val tagsActivity = evtService.getWeekTagsActivity(currActivity, week, year)
+                itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
+                itemList.expandFirstLevelChildren()
+                val weekInput = weekReport.findViewById(R.id.week) as TextInputEditText
+                weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
+                weekInput.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(newText: CharSequence?, startPos: Int, endPos: Int, length: Int) {
+                        val weekStr = if (newText != null) newText.toString() else ""
+                        try {
+                            week = weekStr.toInt()
+                            processWeek(week, year, itemList)
+                        } catch(parseException: ParseException) {
+                            // Do nothing because the week input could be edited and partial
+                        }
+                    }
+                })
+                val yearInput = weekReport.findViewById(R.id.year) as TextInputEditText
+                yearInput.setText(year.toString(), TextView.BufferType.EDITABLE)
+                yearInput.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(p0: Editable?) {
+                    }
+
+                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    }
+
+                    override fun onTextChanged(newText: CharSequence?, startPos: Int, endPos: Int, length: Int) {
+                        val yearStr = newText.toString()
+                        try {
+                            year = yearStr.toInt()
+                            processWeek(week, year, itemList)
+                        } catch(parseException: ParseException) {
+                            // Do nothing because the week input could be edited and partial
+                        }
+                    }
+                })
+                val nextWeekButton = weekReport.findViewById(R.id.nextWeek) as Button
+                nextWeekButton.setOnClickListener({ view ->
+                    week++
+                    if(week > evtService.getLastWeekNumber(year)) {
+                        week = 1
+                        year++
+                        yearInput.setText(year.toString(), TextView.BufferType.EDITABLE)
+                    }
+                    weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
+                    processWeek(week, year, itemList)
+                })
+                val previousWeekButton = weekReport.findViewById(R.id.previousWeek) as Button
+                previousWeekButton.setOnClickListener({ view ->
+                    week--
+                    if (week<=0) {
+                        year--
+                        week = evtService.getLastWeekNumber(year)
+                        yearInput.setText(year.toString(), TextView.BufferType.EDITABLE)
+                    }
+                    weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
+                    processWeek(week, year, itemList)
+                })
+                weekReport
             } else {
                 val notYetImplementedReport = inflater!!.inflate(R.layout.fragment_report, container, false)
                 val textView = notYetImplementedReport.findViewById(R.id.section_label) as TextView
@@ -163,6 +247,18 @@ class ReportActivity : AppCompatActivity() {
                 notYetImplementedReport
             }
             return rootView
+        }
+
+        fun processWeek(week : Int, year: Int, itemList: ExpandableListView) {
+            val currActivity = this@PlaceholderFragment.parentActivity?:activity
+            val tagsActivity = evtService.getWeekTagsActivity(currActivity, week, year)
+            itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
+            itemList.expandFirstLevelChildren()
+        }
+
+        override fun onDestroy() {
+            destroyInjector()
+            super.onDestroy()
         }
 
         companion object {
@@ -176,8 +272,9 @@ class ReportActivity : AppCompatActivity() {
              * Returns a new instance of this fragment for the given section
              * number.
              */
-            fun newInstance(sectionNumber: Int): PlaceholderFragment {
+            fun newInstance(parentActivity : ReportActivity, sectionNumber: Int): PlaceholderFragment {
                 val fragment = PlaceholderFragment()
+                fragment.parentActivity = parentActivity
                 val args = Bundle()
                 args.putInt(ARG_SECTION_NUMBER, sectionNumber)
                 fragment.arguments = args

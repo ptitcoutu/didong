@@ -1,4 +1,4 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
 import android.app.Activity
 import android.database.Cursor
@@ -12,21 +12,25 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-class CalendarService private constructor() {
-    init {
-        println("This ($this) is a singleton")
-    }
-
-    private object Holder {
-        val INSTANCE = CalendarService()
-    }
+class CalendarService() {
 
     companion object {
-        val instance: CalendarService by lazy { Holder.INSTANCE }
         val ACTIVITY_CALENDAR_PREF_NAME = "activity_calendar"
+
+        // The indices for the projection array above.
+        val PROJECTION_ID_INDEX = 0
+        val PROJECTION_TIMEZONE_INDEX = 1
+        val PROJECTION_ACCOUNT_NAME_INDEX = 2
+        val PROJECTION_DISPLAY_NAME_INDEX = 3
+        val PROJECTION_OWNER_ACCOUNT_INDEX = 4
+        val PROJECTION_ACCOUNT_TYPE_INDEX = 5
+        val PROJECTION_IS_PRIMARY_INDEX = 6
+        val PROJECTION_LOCATION_INDEX = 7
+        val PROJECTION_ACCESS_INDEX = 8
     }
 
     val CALENDAR_EVENTS_URI = CalendarContract.Events.CONTENT_URI
+
     // Projection array. Creating indices for this array instead of doing
     // dynamic lookups improves performance.
     val CAL_PROJECTION = arrayOf(CalendarContract.Calendars._ID, // 0
@@ -39,17 +43,6 @@ class CalendarService private constructor() {
             CalendarContract.Calendars.CALENDAR_LOCATION, //7
             CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL//8
     )
-
-    // The indices for the projection array above.
-    val PROJECTION_ID_INDEX = 0
-    val PROJECTION_TIMEZONE_INDEX = 1
-    val PROJECTION_ACCOUNT_NAME_INDEX = 2
-    val PROJECTION_DISPLAY_NAME_INDEX = 3
-    val PROJECTION_OWNER_ACCOUNT_INDEX = 4
-    val PROJECTION_ACCOUNT_TYPE_INDEX = 5
-    val PROJECTION_IS_PRIMARY_INDEX = 6
-    val PROJECTION_LOCATION_INDEX = 7
-    val PROJECTION_ACCESS_INDEX = 8
 
     val listeners: MutableList<DataChangeEventListener> = mutableListOf()
 

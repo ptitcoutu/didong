@@ -1,19 +1,18 @@
-package org.didong.didong.events
+package org.didong.didong.event
 
 import android.app.Activity
 import android.support.v4.view.GestureDetectorCompat
-import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.EventLog
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.*
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.instance
 import org.didong.didong.R
-import com.hootsuite.nachos.NachoTextView
 import org.didong.didong.DataChangeEventListener
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -24,9 +23,12 @@ import java.util.*
  * Created by Vincent Couturier on 04/06/2017.
  */
 class DateSelectionViewHolder : RecyclerView.ViewHolder {
-    val evtService = EventDetailService.instance
+    val injector: KodeinInjector
+    val evtService: EventDetailService
 
-    constructor(parentActivity: Activity, itemView: View?) : super(itemView) {
+    constructor(parentActivity: Activity, parentInjector: KodeinInjector, itemView: View?) : super(itemView) {
+        injector = parentInjector
+        evtService = injector.instance<EventDetailService>().value
         if (itemView != null) {
             val currentDate = itemView.findViewById(R.id.currentDate) as EditText
             val dateFormat = SimpleDateFormat("yyyy-MM-dd")
@@ -84,7 +86,7 @@ class DateSelectionViewHolder : RecyclerView.ViewHolder {
                 }
             }
 
-            val goToday = itemView.findViewById(R.id.goToday)
+            val goToday = itemView.findViewById(R.id.goToday) as Button
             goToday.setOnClickListener {
                 initEditTextWithTodaysDate(currentDate, dateFormat)
             }
