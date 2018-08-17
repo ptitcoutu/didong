@@ -8,22 +8,22 @@
     <string name="current_date">Date</string>
 
     <string name="evt_title">Title</string>
-    <string name="title_activity_settings">Settings</string>
+    <string name="title_settings">Settings</string>
 
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
+    <string name="pref_title_social_recommendations" translatable="false">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations" translatable="false">Recommendations for people to contact
         based on your message history
     </string>
 
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
+    <string name="pref_title_display_name" translatable="false">Display name</string>
+    <string name="pref_default_display_name" translatable="false">John Smith</string>
 
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string name="pref_title_add_friends_to_messages" translatable="false">Add friends to messages</string>
     <string-array name="pref_example_list_titles">
         <item>Always</item>
         <item>When possible</item>
@@ -82,6 +82,35 @@
     <string name="pref_ringtone_silent">Silent</string>
 
     <string name="pref_title_vibrate">Vibrate</string>
+    <string name="day_activities">Day Activities</string>
+    <string name="menu_report">Report</string>
     <string name="title_activity_report">ReportActivity</string>
-    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="section_format" translatable="false">Hello World from section: %1$d</string>
+    <string name="year_hint">year (2017)</string>
+    <string name="previous_week" translatable="false"><![CDATA[<]]></string>
+    <string name="next_week" translatable="false"><![CDATA[>]]></string>
+    <string name="choose_current_date" translatable="false"><![CDATA[>]]></string>
+    <string name="goto_today" translatable="false">*</string>
+    <string name="tags">Tags</string>
+    <string name="clone_event">Clone</string>
+    <string name="start_event">Start</string>
+    <string name="dates_separator"><![CDATA[>]]></string>
+    <string name="week_hint">week (1, 2,..)</string>
+    <string name="whoz_team">Whoz Team</string>
+    <string name="support_email">vincent.couturier@gmail.com</string>
+    <string name="title_activity_followup">Activity followup</string>
+    <string name="title_reporting">Reporting</string>
+    <string name="title_share">Share</string>
+    <string name="title_send">Send</string>
+    <string name="toolbar_day">Day</string>
+    <string name="toolbar_week">Week</string>
+    <string name="toolbar_month">Month</string>
+    <string name="toolbar_year">Year</string>
+    <string name="toolbar_specific_range">Specific Range</string>
+    <string name="coming_soon">Coming soon...</string>
+    <string name="error_occurs">Error occurs :</string>
+    <string name="action_close">Close</string>
+    <string name="calendar_must_be_selected">A calendar must be selected in app settings</string>
+    <string name="event_start">Start</string>
+    <string name="event_stop">Stop</string>
 </resources>

@@ -20,6 +20,7 @@ import java.util.*
 
 /**
  * EventDetail Service Unit Tests
+ * TODO : Convert jUnit test to Spek Spec to enhance readability
  */
 class EventDetailServiceTest {
     var uiService: UIService = mockk(relaxed = true)
@@ -30,6 +31,7 @@ class EventDetailServiceTest {
     var parentActivity: Activity = mockk()
     val beginningDate = 61474978800000L; // 2017-12-25 (Monday)
     val endingDate = 61475324400000L; // 2017-12-29 (Friday)
+    val noCalendarMessage = "no calendar"
 
     @Before
     fun setUp() {
@@ -40,6 +42,7 @@ class EventDetailServiceTest {
 
         // drawer layout is mocked
         every { parentActivity.findViewById(R.id.drawer_layout) as DrawerLayout } returns mockk()
+        every { parentActivity.resources.getString(R.string.calendar_must_be_selected) } returns noCalendarMessage
         contentResolver = mockk();
         every { parentActivity.contentResolver } returns contentResolver
     }
@@ -76,8 +79,8 @@ class EventDetailServiceTest {
 
         // Then: the returned list should be empty and a message should be displayed
         assertEquals(evts, emptyList<EventDetail>())
-        verify(exactly = 1) { uiService.showMessage(any(), eq(evtDetailService.NO_CALENDAR_SELECTED)) }
-        verify(exactly = 0) { uiService.showError(any(), any()) }
+        verify(exactly = 1) { uiService.showMessage(any() as Activity, eq(noCalendarMessage)) }
+        verify(exactly = 0) { uiService.showError(any() as Activity, any()) }
     }
 
     //@Test
@@ -105,8 +108,8 @@ class EventDetailServiceTest {
 
         // Then: no should be displayed and the list of events should contains the one from calendar
         assertNotNull(evts)
-        verify(exactly = 0) { uiService.showMessage(any(), any()) }
-        verify(exactly = 0) { uiService.showError(any(), any()) }
+        verify(exactly = 0) { uiService.showMessage(any() as Activity, any()) }
+        verify(exactly = 0) { uiService.showError(any() as Activity, any()) }
     }
 
     @Test

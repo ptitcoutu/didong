@@ -23,7 +23,7 @@
             card_view:layout_constraintWidth_default="spread"
             card_view:layout_constraintEnd_toEndOf="parent"
             android:layout_marginEnd="8dp"
-            android:hint="Tags" />
+            android:hint="@string/tags" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/item_description_panel"
@@ -66,7 +66,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Clone"
+            android:text="@string/clone_event"
             card_view:layout_constraintBottom_toBottomOf="@+id/startstop_event"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintRight_toRightOf="parent"
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_marginTop="8dp"
-            android:text="Start"
+            android:text="@string/start_event"
             card_view:layout_constraintBottom_toBottomOf="parent"
             card_view:layout_constraintEnd_toStartOf="@+id/clone_event"
             card_view:layout_constraintTop_toBottomOf="@+id/item_description_panel"
@@ -111,7 +111,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text=">"
+            android:text="@string/dates_separator"
             card_view:layout_constraintBottom_toBottomOf="@+id/end_time"
             card_view:layout_constraintEnd_toStartOf="@+id/end_time"
             card_view:layout_constraintStart_toEndOf="@+id/start_time"

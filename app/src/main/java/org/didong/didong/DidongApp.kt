@@ -12,7 +12,7 @@ import org.didong.didong.gui.UIService
 class DidongApp : Application(), KodeinAware {
     override val kodein by Kodein.lazy {
         bind<UIService>() with singleton { UIService() }
-        bind<CalendarService>() with singleton { CalendarService() }
+        bind<CalendarService>() with singleton { CalendarService(instance()) }
         bind<EventDetailService>() with singleton { EventDetailService(instance(), instance()) }
     }
 }

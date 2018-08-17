@@ -19,7 +19,6 @@ import java.util.*
  * Created by Vincent Couturier on 02/07/2017.
  */
 class EventDetailService(val calendarService: CalendarService, val uiService: UIService) {
-    val NO_CALENDAR_SELECTED = "A calendar must be selected in app settings"
     val LOG_TAG = "org.didong.didong"
 
     // Projection array. Creating indices for this array instead of doing
@@ -81,7 +80,6 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
     }
 
     fun getEvents(parentActivity: Activity, startDate: Long, endDate: Long): List<EventDetail> {
-        //println("getEvents from $startDate (${Date(startDate)}) to $endDate  (${Date(endDate)})")
         val evts = ArrayList<EventDetail>()
 
         val activityCalendar = calendarService.getActivityCalendar(parentActivity)
@@ -163,11 +161,11 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
     }
 
     private fun manageError(activity: Activity, e: Exception) {
-        uiService.showError(activity.findViewById(R.id.drawer_layout), e)
+        uiService.showError(activity, e)
     }
 
     private fun manageNoCalendarSelected(activity: Activity) {
-        uiService.showMessage(activity.findViewById(R.id.drawer_layout), NO_CALENDAR_SELECTED)
+        uiService.showMessage(activity, activity.resources.getString(R.string.calendar_must_be_selected))
     }
 
     fun cloneEvent(parentActivity: Activity, evtDetail: EventDetail) {

@@ -60,15 +60,17 @@ public class EventsRecyclerAdapter(val parentActivity: Activity, val injector: K
             viewHolder.startTime.setText(startTxt)
             val endTxt = if (evt.endTime!=null) sdf.format(Date(evt.endTime.toLong())) else ""
             viewHolder.endTime.setText(endTxt)
-            val suggestions = arrayOf("Tortilla Chips", "Melted Cheese", "Salsa", "Guacamole", "Mexico", "Jalapeno")
+            val suggestions = evtService.getTagsActivity(parentActivity).keys.toTypedArray()
             val adapter = ArrayAdapter(parentActivity, android.R.layout.simple_dropdown_item_1line, suggestions)
             viewHolder.tagNachos.setAdapter(adapter)
+            val startLabel = parentActivity.resources.getString(R.string.event_start)
+            val stopLabel = parentActivity.resources.getString(R.string.event_stop)
             if(evt.description != null) {
                 viewHolder.tagNachos.setText(evt.description.tags)
-                viewHolder.startStopButton.setText(if (evt.description.started?:false) "Stop" else "Start")
+                viewHolder.startStopButton.setText(if (evt.description.started?:false) stopLabel else startLabel)
             } else {
                 viewHolder.tagNachos.setText(emptyList())
-                viewHolder.startStopButton.setText("Start")
+                viewHolder.startStopButton.setText(startLabel)
             }
 
         } else if (viewHolder is DateSelectionViewHolder) {

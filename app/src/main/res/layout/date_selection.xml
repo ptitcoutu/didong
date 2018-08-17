@@ -32,7 +32,7 @@
             style="@style/Widget.AppCompat.Button.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="&gt;"
+            android:text="@string/choose_current_date"
             card_view:layout_constraintBottom_toBottomOf="@id/currentdate_panel"
             card_view:layout_constraintStart_toEndOf="@id/currentdate_panel"
             tools:layout_editor_absoluteY="0dp"
@@ -43,7 +43,7 @@
             style="@style/Widget.AppCompat.Button.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="*"
+            android:text="@string/goto_today"
             card_view:layout_constraintBottom_toBottomOf="@id/currentdate_panel"
             card_view:layout_constraintStart_toEndOf="@id/chooseCurrentDate"
             />
