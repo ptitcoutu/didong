@@ -54,7 +54,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
         val spinner = findViewById(R.id.spinner) as Spinner
         spinner.adapter = MyAdapter(
                 toolbar.context,
-                arrayOf("Day", "Week", "Month", "Year", "Specific Range"))
+                arrayOf(this.resources.getString(R.string.toolbar_day), this.resources.getString(R.string.toolbar_week), this.resources.getString(R.string.toolbar_month), this.resources.getString(R.string.toolbar_year), this.resources.getString(R.string.toolbar_specific_range )))
 
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
@@ -157,7 +157,6 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
                 itemList.expandFirstLevelChildren()
                 val dateCard = dayReport.findViewById(R.id.currentdate_card) as CardView
-                val dateSelectionViewHolder = DateSelectionViewHolder(currActivity, injector, dateCard)
                 evtService.listeners.add(
                         object : DataChangeEventListener {
                             override fun dataChange(evt: Any) {
@@ -218,7 +217,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                     }
                 })
                 val nextWeekButton = weekReport.findViewById(R.id.nextWeek) as Button
-                nextWeekButton.setOnClickListener({ view ->
+                nextWeekButton.setOnClickListener { view ->
                     week++
                     if(week > evtService.getLastWeekNumber(year)) {
                         week = 1
@@ -227,9 +226,9 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                     }
                     weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
                     processWeek(week, year, itemList)
-                })
+                }
                 val previousWeekButton = weekReport.findViewById(R.id.previousWeek) as Button
-                previousWeekButton.setOnClickListener({ view ->
+                previousWeekButton.setOnClickListener { view ->
                     week--
                     if (week<=0) {
                         year--
@@ -238,12 +237,12 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                     }
                     weekInput.setText(week.toString(), TextView.BufferType.EDITABLE)
                     processWeek(week, year, itemList)
-                })
+                }
                 weekReport
             } else {
                 val notYetImplementedReport = inflater!!.inflate(R.layout.fragment_report, container, false)
                 val textView = notYetImplementedReport.findViewById(R.id.section_label) as TextView
-                textView.text = "Not Yet Implemented $arg"
+                textView.text = this.resources.getString(R.string.coming_soon)
                 notYetImplementedReport
             }
             return rootView

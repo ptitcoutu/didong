@@ -52,7 +52,7 @@ class EventsViewHolder : RecyclerView.ViewHolder {
         startStopButton.setOnClickListener { view ->
             if (evtDetail?.description?.started?:false) {
                 // Stop the event
-                startStopButton.setText("Start")
+                startStopButton.setText(parentActivity.resources.getString(R.string.event_start))
                 if (evtDetail != null) {
                     val eventDetail : EventDetail = evtDetail as EventDetail
                     eventDetail?.title = itemTitle.text.toString()
@@ -68,7 +68,7 @@ class EventsViewHolder : RecyclerView.ViewHolder {
                     val now = Date().time.toString()
                     evtDetailService.updateEvent(parentActivity, EventDetail(eventDetail.id,eventDetail.calendarId,eventDetail.title,eventDetail.description, now, now))
                 }
-                startStopButton.setText("Stop")
+                startStopButton.setText(parentActivity.resources.getString(R.string.event_stop))
             }
             started = !started
         }

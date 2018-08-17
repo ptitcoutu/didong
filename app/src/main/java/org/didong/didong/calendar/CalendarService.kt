@@ -4,15 +4,15 @@ import android.app.Activity
 import android.database.Cursor
 import android.preference.PreferenceManager
 import android.provider.CalendarContract
-import android.support.design.widget.Snackbar
 import org.didong.didong.DataChangeEventListener
 import org.didong.didong.calendar.CalendarDetail
+import org.didong.didong.gui.UIService
 import java.util.*
 
 /**
  * Created by Vincent Couturier on 02/07/2017.
  */
-class CalendarService() {
+class CalendarService(val uiService: UIService) {
 
     companion object {
         val ACTIVITY_CALENDAR_PREF_NAME = "activity_calendar"
@@ -69,8 +69,7 @@ class CalendarService() {
                 return CalendarDetail(id = calID, timeZone = calTimeZone, displayName = displayName)
             }
         } catch (e: SecurityException) {
-            Snackbar.make(parentActivity.window.decorView, "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
-                    .setAction("Close", null).show()
+            uiService.showError(parentActivity, e)
         } finally {
             if (cur != null) {
                 cur.close()
@@ -109,8 +108,7 @@ class CalendarService() {
                 }
             }
         } catch (e: SecurityException) {
-            Snackbar.make(parentActivity.window.decorView, "Error occurs ${e.message}", Snackbar.LENGTH_LONG)
-                    .setAction("Close", null).show()
+            uiService.showError(parentActivity, e)
         } finally {
             if (cur != null) {
                 cur.close()

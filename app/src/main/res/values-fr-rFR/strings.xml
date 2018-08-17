@@ -32,4 +32,15 @@
     <string name="title_send">Envoyer</string>
     <string name="title_activity_report">Rapport</string>
     <string name="tags">Tags</string>
+    <string name="toolbar_day">Jour</string>
+    <string name="toolbar_week">Semaine</string>
+    <string name="toolbar_month">Mois</string>
+    <string name="toolbar_year">Année</string>
+    <string name="toolbar_specific_range">Période spécifique</string>
+    <string name="coming_soon">Arrive bientôt...</string>
+    <string name="error_occurs">Erreur survenue :</string>
+    <string name="action_close">Fermer</string>
+    <string name="calendar_must_be_selected">Un agenda doit être sélectionné dans le paramétrage de l\'application</string>
+    <string name="event_start">Début</string>
+    <string name="event_stop">Fin</string>
 </resources>
