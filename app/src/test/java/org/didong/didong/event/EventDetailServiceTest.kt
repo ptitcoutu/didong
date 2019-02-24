@@ -3,7 +3,7 @@ package org.didong.didong.event
 import android.app.Activity
 import android.content.ContentResolver
 import android.database.Cursor
-import android.support.v4.widget.DrawerLayout
+import androidx.drawerlayout.widget.DrawerLayout
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -29,8 +29,8 @@ class EventDetailServiceTest {
     var contentResolver: ContentResolver = mockk()
 
     var parentActivity: Activity = mockk()
-    val beginningDate = 61474978800000L; // 2017-12-25 (Monday)
-    val endingDate = 61475324400000L; // 2017-12-29 (Friday)
+    val beginningDate = 61474978800000L // 2017-12-25 (Monday)
+    val endingDate = 61475324400000L // 2017-12-29 (Friday)
     val noCalendarMessage = "no calendar"
 
     @Before
@@ -41,9 +41,9 @@ class EventDetailServiceTest {
         evtDetailService = EventDetailService(calService, uiService)
 
         // drawer layout is mocked
-        every { parentActivity.findViewById(R.id.drawer_layout) as DrawerLayout } returns mockk()
+        every { parentActivity.findViewById(R.id.drawer_layout) as androidx.drawerlayout.widget.DrawerLayout } returns mockk()
         every { parentActivity.resources.getString(R.string.calendar_must_be_selected) } returns noCalendarMessage
-        contentResolver = mockk();
+        contentResolver = mockk()
         every { parentActivity.contentResolver } returns contentResolver
     }
 
@@ -90,7 +90,7 @@ class EventDetailServiceTest {
         every { calService.getActivityCalendarDetail(eq(parentActivity)) } returns CalendarDetail(1, "Test", "FR")
         val returnedCursor: Cursor = mockk()
         every { contentResolver.query(any(), any(), any(), any(), any()) } returns returnedCursor
-        var calIter = true;
+        var calIter = true
         every { returnedCursor.moveToNext() } answers {
             if (calIter) {
                 calIter = false

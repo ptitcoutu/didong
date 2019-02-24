@@ -1,8 +1,8 @@
 package org.didong.didong.event
 
 import android.app.Activity
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.view.GestureDetectorCompat
+import androidx.recyclerview.widget.RecyclerView
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -22,11 +22,11 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 04/06/2017.
  */
-class DateSelectionViewHolder : RecyclerView.ViewHolder {
+class DateSelectionViewHolder : androidx.recyclerview.widget.RecyclerView.ViewHolder {
     val injector: KodeinInjector
     val evtService: EventDetailService
 
-    constructor(parentActivity: Activity, parentInjector: KodeinInjector, itemView: View?) : super(itemView) {
+    constructor(parentActivity: Activity, parentInjector: KodeinInjector, itemView: View) : super(itemView) {
         injector = parentInjector
         evtService = injector.instance<EventDetailService>().value
         if (itemView != null) {

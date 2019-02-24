@@ -11,20 +11,20 @@ class EventDescription(val tags: List<String>, val started: Boolean) {
         fun fromJson(jsonContent : String) : EventDescription {
             try {
                 val jsonObject = JSONObject(jsonContent)
-                val tagsArray = jsonObject?.get("tags") as JSONArray
+                val tagsArray = jsonObject.get("tags") as JSONArray
                 val tags = ArrayList<String>()
-                if (tagsArray != null && tagsArray.length()>0) {
+                if (tagsArray.length()>0) {
                     for (tagInd in  0..tagsArray.length()-1) {
                         tags.add(tagsArray.getString(tagInd))
                     }
                 }
-                val started = jsonObject.getString("started").toBoolean() ?: false
+                val started = jsonObject.getString("started")?.toBoolean() ?: false
                 return EventDescription(tags = tags, started = started)
             } catch(e:Exception) {
                 return EventDescription(tags = listOf(), started = false)
             }
         }
-        val EMPTY_DESCRIPTION_JSON = "{\"tags\":[], \"started\":false}"
+        const val EMPTY_DESCRIPTION_JSON = "{\"tags\":[], \"started\":false}"
     }
 
     fun toJson() : String {

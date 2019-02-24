@@ -1,7 +1,7 @@
 package org.didong.didong.event
 
 import android.app.Activity
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +17,8 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 04/06/2017.
  */
-public class EventsRecyclerAdapter(val parentActivity: Activity, val injector: KodeinInjector) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class EventsRecyclerAdapter(val parentActivity: Activity, val injector: KodeinInjector) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
     val evtService: EventDetailService by injector.instance()
     private var calendarEvents = evtService.getEvents(parentActivity)
     val EVENT_DETAIL = 0
@@ -25,10 +26,10 @@ public class EventsRecyclerAdapter(val parentActivity: Activity, val injector: K
 
     override fun getItemViewType(position: Int): Int {
         // The first card is the date selection card
-        return if (position == 0 || position == calendarEvents.size+1) DATE_SELECTION else EVENT_DETAIL;
+        return if (position == 0 || position == calendarEvents.size+1) DATE_SELECTION else EVENT_DETAIL
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup?, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         if (viewGroup != null) {
             when (viewType) {
                 DATE_SELECTION -> {
@@ -50,7 +51,7 @@ public class EventsRecyclerAdapter(val parentActivity: Activity, val injector: K
         }
     }
 
-    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder?, i: Int) {
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, i: Int) {
         if (viewHolder is EventsViewHolder) {
             val evt : EventDetail = calendarEvents[i-1]
             val sdf = SimpleDateFormat("MM-dd HH:mm")

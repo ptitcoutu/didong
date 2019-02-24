@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.CalendarContract
-import android.support.design.widget.Snackbar
+import com.google.android.material.snackbar.Snackbar
 import android.util.Log
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.instance
@@ -58,7 +58,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
         cal.set(Calendar.YEAR, year)
         val beginOfFirstDayOfWeek = cal.timeInMillis
         val beginOfNextDayAfterLastDayOfWeek = beginOfFirstDayOfWeek + 7 * numberOfMillisInADay
-        return getEvents(parentActivity, beginOfFirstDayOfWeek, beginOfNextDayAfterLastDayOfWeek);
+        return getEvents(parentActivity, beginOfFirstDayOfWeek, beginOfNextDayAfterLastDayOfWeek)
     }
 
     fun getLastWeekNumber(year: Int): Int {
@@ -76,7 +76,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
     fun getEvents(parentActivity: Activity): List<EventDetail> {
         val currentDateTime = currentDate.time
         val nextDayAfterCurrentDateTime = currentDateTime + numberOfMillisInADay
-        return getEvents(parentActivity, currentDateTime, nextDayAfterCurrentDateTime);
+        return getEvents(parentActivity, currentDateTime, nextDayAfterCurrentDateTime)
     }
 
     fun getEvents(parentActivity: Activity, startDate: Long, endDate: Long): List<EventDetail> {
@@ -92,7 +92,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
             val activityCalendarDetail = calendarService.getActivityCalendarDetail(parentActivity)
             if (activityCalendarDetail == null) {
                 manageNoCalendarSelected(parentActivity)
-                return evts;
+                return evts
             }
             val selection = "(${CalendarContract.Events.CALENDAR_ID} = ? and ${CalendarContract.Events.DTSTART} >= ? and ${CalendarContract.Events.DTSTART} < ?)"
 
@@ -105,7 +105,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
                 while (cur.moveToNext()) {
                     println("process event")
                     // Get the field values
-                    val evtID = cur.getLong(PROJECTION_ID_INDEX);
+                    val evtID = cur.getLong(PROJECTION_ID_INDEX)
                     println(" evtId : $evtID")
                     val dtStart = cur.getString(PROJECTION_DTSTART_INDEX)
                     //val dtStartLong = dtStart?.toLong()
@@ -148,8 +148,8 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
                 eventData.put(CalendarContract.Events.DTEND, nowCal.timeInMillis)
                 eventData.put(CalendarContract.Events.TITLE, "")
                 eventData.put(CalendarContract.Events.DESCRIPTION, EventDescription.EMPTY_DESCRIPTION_JSON)
-                eventData.put(CalendarContract.Events.EVENT_TIMEZONE, calendarDetail?.timeZone)
-                eventData.put(CalendarContract.Events.CALENDAR_ID, calendarDetail?.id)
+                eventData.put(CalendarContract.Events.EVENT_TIMEZONE, calendarDetail.timeZone)
+                eventData.put(CalendarContract.Events.CALENDAR_ID, calendarDetail.id)
                 val evtURI = cr.insert(CALENDAR_EVENTS_URI, eventData)
                 notifyChange(evtURI)
             } else {
@@ -176,7 +176,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
             eventData.put(CalendarContract.Events.DTSTART, evtDetail.startTime)
             eventData.put(CalendarContract.Events.DTEND, evtDetail.endTime)
             eventData.put(CalendarContract.Events.TITLE, evtDetail.title)
-            eventData.put(CalendarContract.Events.DESCRIPTION, evtDetail.description?.toJson() ?: EventDescription.EMPTY_DESCRIPTION_JSON)
+            eventData.put(CalendarContract.Events.DESCRIPTION, evtDetail.description.toJson())
             eventData.put(CalendarContract.Events.EVENT_TIMEZONE, calendarDetail?.timeZone)
             eventData.put(CalendarContract.Events.CALENDAR_ID, calendarDetail?.id)
             val evtURI = cr.insert(CALENDAR_EVENTS_URI, eventData)
@@ -193,7 +193,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
             eventData.put(CalendarContract.Events.DTSTART, evtDetail.startTime)
             eventData.put(CalendarContract.Events.DTEND, evtDetail.endTime)
             eventData.put(CalendarContract.Events.TITLE, evtDetail.title)
-            eventData.put(CalendarContract.Events.DESCRIPTION, evtDetail.description?.toJson() ?: EventDescription.EMPTY_DESCRIPTION_JSON)
+            eventData.put(CalendarContract.Events.DESCRIPTION, evtDetail.description.toJson())
             eventData.put(CalendarContract.Events.CALENDAR_ID, evtDetail.calendarId)
             val evtURI = cr.update(CALENDAR_EVENTS_URI, eventData, "(${CalendarContract.Events._ID} = ?)", arrayOf(evtDetail.id.toString()))
             notifyChange(evtURI)
@@ -226,7 +226,7 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
                 if (eventDetail.startTime != null && eventDetail.startTime != "" && (eventDetail.description.started || eventDetail.startTime != eventDetail.endTime)) {
                     val startTime = eventDetail.startTime.toLong()
                     // If the event is not terminated the endTime is evaluated to now otherwise to the saved endTime of the event
-                    val endTime: Long = if (eventDetail.description?.started) Date().time else eventDetail.endTime!!.toLong()
+                    val endTime: Long = if (eventDetail.description.started) Date().time else eventDetail.endTime!!.toLong()
                     val elapse = endTime - startTime
                     sumOfActivity + elapse
                 } else {
