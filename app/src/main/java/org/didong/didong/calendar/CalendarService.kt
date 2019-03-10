@@ -20,12 +20,12 @@ class CalendarService(val uiService: UIService) {
         const val PROJECTION_ID_INDEX = 0
         const val PROJECTION_TIMEZONE_INDEX = 1
         //val PROJECTION_ACCOUNT_NAME_INDEX = 2
-        const val PROJECTION_DISPLAY_NAME_INDEX = 3
+        const val PROJECTION_DISPLAY_NAME_INDEX = 2
         //val PROJECTION_OWNER_ACCOUNT_INDEX = 4
         //val PROJECTION_ACCOUNT_TYPE_INDEX = 5
         //val PROJECTION_IS_PRIMARY_INDEX = 6
         //val PROJECTION_LOCATION_INDEX = 7
-        const val PROJECTION_ACCESS_INDEX = 8
+        const val PROJECTION_ACCESS_INDEX = 3
     }
 
     val CALENDAR_EVENTS_URI = CalendarContract.Events.CONTENT_URI!!
@@ -34,12 +34,12 @@ class CalendarService(val uiService: UIService) {
     // dynamic lookups improves performance.
     val CAL_PROJECTION = arrayOf(CalendarContract.Calendars._ID, // 0
             CalendarContract.Calendars.CALENDAR_TIME_ZONE, // 1
-            CalendarContract.Calendars.ACCOUNT_NAME, // 2
+            //CalendarContract.Calendars.ACCOUNT_NAME, // 2
             CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, // 3
-            CalendarContract.Calendars.OWNER_ACCOUNT, // 4
-            CalendarContract.Calendars.ACCOUNT_TYPE, //5
-            CalendarContract.Calendars.IS_PRIMARY, //6
-            CalendarContract.Calendars.CALENDAR_LOCATION, //7
+            //CalendarContract.Calendars.OWNER_ACCOUNT, // 4
+            //CalendarContract.Calendars.ACCOUNT_TYPE, //5
+            //CalendarContract.Calendars.IS_PRIMARY, //6
+            //CalendarContract.Calendars.CALENDAR_LOCATION, //7
             CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL//8
     )
 
