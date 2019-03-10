@@ -1,26 +1,25 @@
 package org.didong.didong
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.navigation.NavigationView
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.appcompat.widget.Toolbar
-import org.didong.didong.event.EventsRecyclerAdapter
-import android.content.Intent
-import android.view.*
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
 import com.github.salomonbrys.kodein.instance
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import org.didong.didong.event.EventDetailService
+import org.didong.didong.event.EventsRecyclerAdapter
 
 
 class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActivityInjector {
@@ -59,11 +58,11 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActi
         val eventsView = findViewById(R.id.events_view) as androidx.recyclerview.widget.RecyclerView
         evtRecyclerAdapter = EventsRecyclerAdapter(this, injector)
         eventsView.adapter = evtRecyclerAdapter
-        eventsView.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this)
+        eventsView.layoutManager = LinearLayoutManager(this)
         evtService.listeners.add(this)
     }
 
-    override fun dataChange(newObject: Any) {
+    override fun dataChange(newObject: Any?) {
         evtRecyclerAdapter?.reloadEvents()
         evtRecyclerAdapter?.notifyDataSetChanged()
     }
@@ -87,13 +86,13 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActi
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.action_settings -> {
                 val prefIntent = Intent(this, SettingsActivity::class.java)
                 startActivity(prefIntent)
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

@@ -156,7 +156,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 itemList.expandFirstLevelChildren()
                 evtService.listeners.add(
                         object : DataChangeEventListener {
-                            override fun dataChange(newObject: Any) {
+                            override fun dataChange(newObject: Any?) {
                                 if (newObject is Date) {
                                     val currentTagsActivity = evtService.getTagsActivity(currActivity)
                                     itemList.setAdapter(ReportListAdapter(evtService, currentTagsActivity))

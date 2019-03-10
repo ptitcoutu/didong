@@ -4,12 +4,9 @@ import android.app.Activity
 import android.content.ContentValues
 import android.database.Cursor
 import android.provider.CalendarContract
-import com.google.android.material.snackbar.Snackbar
-import android.util.Log
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.instance
 import org.didong.didong.DataChangeEventListener
 import org.didong.didong.R
+import org.didong.didong.calendar.CalendarService
 import org.didong.didong.format
 import org.didong.didong.gui.UIService
 import java.text.SimpleDateFormat
@@ -116,7 +113,6 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
 
                     val title = cur.getString(PROJECTION_TITLE_INDEX)
                     val description = cur.getString(PROJECTION_DESCRIPTION_INDEX)
-                    val alDay = cur.getString(PROJECTION_ALL_DAY_INDEX)
                     val calId = cur.getString(PROJECTION_CALENDAR_ID_INDEX)
                     evts.add(EventDetail(id = evtID, calendarId = calId, startTime = dtStart, endTime = dtEnd, title = title, description = EventDescription.fromJson(description)))
                 }
@@ -237,11 +233,11 @@ class EventDetailService(val calendarService: CalendarService, val uiService: UI
         return tagsActivity
     }
 
-    private fun notifyChange(data: Any) {
+    private fun notifyChange(data: Any?) {
         listeners.forEach { it.dataChange(data) }
     }
 
-    fun refreshCurrentEventList(parentActivity: Activity) {
+    fun refreshCurrentEventList() {
         notifyChange(currentDate)
     }
 

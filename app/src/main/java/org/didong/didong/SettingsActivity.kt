@@ -17,7 +17,7 @@ import com.github.salomonbrys.kodein.android.ActivityInjector
 import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
 import com.github.salomonbrys.kodein.android.FragmentInjector
 import com.github.salomonbrys.kodein.instance
-import org.didong.didong.event.CalendarService
+import org.didong.didong.calendar.CalendarService
 
 /**
  * A [PreferenceActivity] that presents a set of application settings. On

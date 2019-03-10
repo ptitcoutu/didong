@@ -2,7 +2,7 @@ package org.didong.didong
 
 import android.app.Application
 import com.github.salomonbrys.kodein.*
-import org.didong.didong.event.CalendarService
+import org.didong.didong.calendar.CalendarService
 import org.didong.didong.event.EventDetailService
 import org.didong.didong.gui.UIService
 
