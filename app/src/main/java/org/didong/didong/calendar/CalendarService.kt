@@ -1,12 +1,16 @@
 package org.didong.didong.calendar
 
 import android.app.Activity
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.database.Cursor
+import android.net.Uri
 import android.preference.PreferenceManager
 import android.provider.CalendarContract
-import org.didong.didong.DataChangeEventListener
+import android.provider.CalendarContract.Calendars
 import org.didong.didong.gui.UIService
 import java.util.*
+
 
 /**
  * Created by Vincent Couturier on 02/07/2017.
@@ -29,18 +33,18 @@ class CalendarService(val uiService: UIService) {
     }
 
     val CALENDAR_EVENTS_URI = CalendarContract.Events.CONTENT_URI!!
-
+    val CALENDARS_URI = Calendars.CONTENT_URI!!
     // Projection array. Creating indices for this array instead of doing
     // dynamic lookups improves performance.
-    val CAL_PROJECTION = arrayOf(CalendarContract.Calendars._ID, // 0
-            CalendarContract.Calendars.CALENDAR_TIME_ZONE, // 1
+    val CAL_PROJECTION = arrayOf(Calendars._ID, // 0
+            Calendars.CALENDAR_TIME_ZONE, // 1
             //CalendarContract.Calendars.ACCOUNT_NAME, // 2
-            CalendarContract.Calendars.CALENDAR_DISPLAY_NAME, // 3
+            Calendars.CALENDAR_DISPLAY_NAME, // 3
             //CalendarContract.Calendars.OWNER_ACCOUNT, // 4
             //CalendarContract.Calendars.ACCOUNT_TYPE, //5
             //CalendarContract.Calendars.IS_PRIMARY, //6
             //CalendarContract.Calendars.CALENDAR_LOCATION, //7
-            CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL//8
+            Calendars.CALENDAR_ACCESS_LEVEL//8
     )
 
     fun getActivityCalendar(parentActivity: Activity): String {
@@ -52,15 +56,15 @@ class CalendarService(val uiService: UIService) {
         // Run query
         var cur: Cursor? = null
         val cr = parentActivity.contentResolver
-        val selection = "(${CalendarContract.Calendars.CALENDAR_DISPLAY_NAME} = ?)"
+        val selection = "(${Calendars.CALENDAR_DISPLAY_NAME} = ?)"
         val selectionArgs = arrayOf(activityCalendar)
         // Submit the query and get a Cursor object back.
         try {
-            cur = cr.query(CALENDAR_EVENTS_URI, CAL_PROJECTION, selection, selectionArgs, null)
+            cur = cr.query(CALENDARS_URI, CAL_PROJECTION, selection, selectionArgs, null)
             while (cur.moveToNext()) {
                 // Get the field values
                 val calID = cur.getLong(PROJECTION_ID_INDEX)
-                val calTimeZone = cur.getString(PROJECTION_TIMEZONE_INDEX)
+                val calTimeZone = cur.getString(PROJECTION_TIMEZONE_INDEX) ?: "UTC"
                 val displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX)
                 return CalendarDetail(id = calID, timeZone = calTimeZone, displayName = displayName)
             }
@@ -83,17 +87,16 @@ class CalendarService(val uiService: UIService) {
         // Run query
         var cur: Cursor? = null
         val cr = parentActivity.contentResolver
-        val uri = CalendarContract.Calendars.CONTENT_URI
         val selection = null
         val selectionArgs = null
         // Submit the query and get a Cursor object back.
         try {
-            cur = cr.query(uri, CAL_PROJECTION, selection, selectionArgs, null)
+            cur = cr.query(CALENDARS_URI, CAL_PROJECTION, selection, selectionArgs, null)
             while (cur.moveToNext()) {
                 // Get the field values
                 val displayName = cur.getString(PROJECTION_DISPLAY_NAME_INDEX)
                 val calAccess = cur.getInt(PROJECTION_ACCESS_INDEX)
-                if (calAccess == CalendarContract.Calendars.CAL_ACCESS_OWNER) {
+                if (calAccess == Calendars.CAL_ACCESS_OWNER) {
                     calendars.add(displayName)
                 }
             }
@@ -107,4 +110,43 @@ class CalendarService(val uiService: UIService) {
         return calendars
     }
 
+
+
+    fun addDefaultDidongCalendar(parentActivity: Activity): Uri? {
+        val cr = parentActivity.contentResolver
+        try {
+            val cv = buildDefaultDidongCalendarContentValues()
+            val calUri: Uri = buildDefaultDidongCalendarUri()
+            return cr.insert(calUri, cv)
+        } catch (e: Exception) {
+            uiService.showError(parentActivity, e)
+            return null
+        }
+    }
+
+    val ACCOUNT_NAME = "private"
+    private fun buildDefaultDidongCalendarUri(): Uri {
+        return Calendars.CONTENT_URI
+                .buildUpon()
+                .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
+                .appendQueryParameter(Calendars.ACCOUNT_NAME, ACCOUNT_NAME)
+                .appendQueryParameter(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
+                .build()
+    }
+
+    private fun buildDefaultDidongCalendarContentValues(): ContentValues {
+        val dispName = "Didong"
+        val intName = "private_$dispName"
+        val cv = ContentValues()
+        cv.put(Calendars.ACCOUNT_NAME, ACCOUNT_NAME)
+        cv.put(Calendars.ACCOUNT_TYPE, CalendarContract.ACCOUNT_TYPE_LOCAL)
+        cv.put(Calendars.NAME, intName)
+        cv.put(Calendars.CALENDAR_DISPLAY_NAME, dispName)
+        cv.put(Calendars.CALENDAR_COLOR, 0x0066CC)
+        cv.put(Calendars.CALENDAR_ACCESS_LEVEL, Calendars.CAL_ACCESS_OWNER)
+        cv.put(Calendars.OWNER_ACCOUNT, ACCOUNT_NAME)
+        cv.put(Calendars.VISIBLE, 1)
+        cv.put(Calendars.SYNC_EVENTS, 1)
+        return cv
+    }
 }

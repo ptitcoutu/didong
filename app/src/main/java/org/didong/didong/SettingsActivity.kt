@@ -95,7 +95,14 @@ class SettingsActivity : AppCompatPreferenceActivity(), ActivityInjector {
             setHasOptionsMenu(true)
 
             val listPreference = findPreference(CalendarService.ACTIVITY_CALENDAR_PREF_NAME) as ListPreference
-            val calendars = calendarService.getCalendars(activity)
+            val calendars = calendarService.getCalendars(activity).let {
+                if (it.isEmpty()) {
+                    calendarService.addDefaultDidongCalendar(activity)
+                    calendarService.getCalendars(activity)
+                } else {
+                    it
+                }
+            }
             listPreference.entries = calendars.toTypedArray()
             listPreference.entryValues = calendars.toTypedArray()
             bindPreferenceSummaryToValue(findPreference("activity_calendar"))

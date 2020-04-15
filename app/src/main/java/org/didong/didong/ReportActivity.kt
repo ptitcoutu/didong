@@ -25,6 +25,8 @@ import androidx.fragment.app.FragmentActivity
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.android.*
 import com.github.salomonbrys.kodein.instance
+import kotlinx.android.synthetic.main.date_selection.view.*
+import org.didong.didong.event.DateSelectionViewHolder
 import org.didong.didong.event.EventDetailService
 import org.didong.didong.gui.expandFirstLevelChildren
 import java.text.ParseException
@@ -150,6 +152,8 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
             val arg = arguments?.getInt(ARG_SECTION_NUMBER)
             val rootView = if (arg == 1) {
                 val dayReport = inflater.inflate(R.layout.fragment_report_day, container, false)
+                DateSelectionViewHolder.initDateSelectionView(evtService, dayReport.findViewById(R.id.currentdate_card))
+
                 val itemList = dayReport.findViewById(R.id.tagActivityList) as ExpandableListView
                 val tagsActivity = evtService.getTagsActivity(currActivity)
                 itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
