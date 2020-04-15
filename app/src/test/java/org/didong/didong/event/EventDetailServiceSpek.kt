@@ -72,7 +72,7 @@ class EventDetailServiceSpek : Spek({
                 tags.shouldContain("a2" to 2_400_000L /* 40mn */)
             }
             it("should group and sum event by 'normalized' tags") {
-                // given: a liste of three events related to 4 different tags
+                // given: a list of three events related to 4 different tags
                 val events = listOf(
                         EventDetail(id = 1, title = "t1", calendarId = "c1",
                                 startTime = "1517475600000" /* 2018-02-01T10:00:00*/,
