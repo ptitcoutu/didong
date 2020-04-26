@@ -1,26 +1,25 @@
 package org.didong.didong
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.NavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
-import org.didong.didong.event.EventsRecyclerAdapter
-import android.content.Intent
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.android.AppCompatActivityInjector
 import com.github.salomonbrys.kodein.instance
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import org.didong.didong.event.EventDetailService
+import org.didong.didong.event.EventsRecyclerAdapter
 
 
 class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActivityInjector {
@@ -36,18 +35,18 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActi
                 ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR)
                         != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 0);
+                    arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR), 0)
         }
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
         val fab = findViewById(R.id.fab) as FloatingActionButton
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener { _ ->
             evtService.createEvent(this)
         }
 
-        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        val drawer = findViewById(R.id.drawer_layout) as androidx.drawerlayout.widget.DrawerLayout
         val toggle = ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
@@ -56,20 +55,20 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActi
         val navigationView = findViewById(R.id.nav_view) as NavigationView
         navigationView.setNavigationItemSelectedListener(MainNavigationListener(this, drawer))
 
-        val eventsView = findViewById(R.id.events_view) as RecyclerView
+        val eventsView = findViewById(R.id.events_view) as androidx.recyclerview.widget.RecyclerView
         evtRecyclerAdapter = EventsRecyclerAdapter(this, injector)
         eventsView.adapter = evtRecyclerAdapter
         eventsView.layoutManager = LinearLayoutManager(this)
         evtService.listeners.add(this)
     }
 
-    override fun dataChange(newObject: Any) {
+    override fun dataChange(newObject: Any?) {
         evtRecyclerAdapter?.reloadEvents()
         evtRecyclerAdapter?.notifyDataSetChanged()
     }
 
     override fun onBackPressed() {
-        val drawer = findViewById(R.id.drawer_layout) as DrawerLayout
+        val drawer = findViewById(R.id.drawer_layout) as androidx.drawerlayout.widget.DrawerLayout
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         } else {
@@ -87,13 +86,13 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActi
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.action_settings -> {
                 val prefIntent = Intent(this, SettingsActivity::class.java)
                 startActivity(prefIntent)
-                return true
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
