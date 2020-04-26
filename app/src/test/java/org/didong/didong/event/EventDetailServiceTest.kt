@@ -3,13 +3,14 @@ package org.didong.didong.event
 import android.app.Activity
 import android.content.ContentResolver
 import android.database.Cursor
-import android.support.v4.widget.DrawerLayout
+import androidx.drawerlayout.widget.DrawerLayout
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.amshove.kluent.`should equal`
 import org.didong.didong.R
 import org.didong.didong.calendar.CalendarDetail
+import org.didong.didong.calendar.CalendarService
 import org.didong.didong.gui.UIService
 import org.junit.After
 import org.junit.Before
@@ -29,8 +30,8 @@ class EventDetailServiceTest {
     var contentResolver: ContentResolver = mockk()
 
     var parentActivity: Activity = mockk()
-    val beginningDate = 61474978800000L; // 2017-12-25 (Monday)
-    val endingDate = 61475324400000L; // 2017-12-29 (Friday)
+    val beginningDate = 61474978800000L // 2017-12-25 (Monday)
+    val endingDate = 61475324400000L // 2017-12-29 (Friday)
     val noCalendarMessage = "no calendar"
 
     @Before
@@ -43,7 +44,7 @@ class EventDetailServiceTest {
         // drawer layout is mocked
         every { parentActivity.findViewById(R.id.drawer_layout) as DrawerLayout } returns mockk()
         every { parentActivity.resources.getString(R.string.calendar_must_be_selected) } returns noCalendarMessage
-        contentResolver = mockk();
+        contentResolver = mockk()
         every { parentActivity.contentResolver } returns contentResolver
     }
 
@@ -72,7 +73,7 @@ class EventDetailServiceTest {
     @Test
     fun `getEvents should fail if no calendar has been defined by the user`() {
         // Given: new instance of event detail service with a calendar service mock with no user defined 'calendar'
-        every { calService.getActivityCalendar(any()) } returns ""
+        every { calService.getActivityCalendar(any() as Activity) } returns ""
 
         // When: we retrieve event from event detail service
         val evts = evtDetailService.getEvents(parentActivity, beginningDate, endingDate)
@@ -90,7 +91,7 @@ class EventDetailServiceTest {
         every { calService.getActivityCalendarDetail(eq(parentActivity)) } returns CalendarDetail(1, "Test", "FR")
         val returnedCursor: Cursor = mockk()
         every { contentResolver.query(any(), any(), any(), any(), any()) } returns returnedCursor
-        var calIter = true;
+        var calIter = true
         every { returnedCursor.moveToNext() } answers {
             if (calIter) {
                 calIter = false

@@ -1,16 +1,16 @@
 package org.didong.didong
 
 import android.content.Intent
-import android.support.design.widget.NavigationView
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.navigation.NavigationView
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.appcompat.app.AppCompatActivity
 import android.view.MenuItem
 
 /**
  * Hold first level navigation on didong
  */
-class MainNavigationListener(val activity : AppCompatActivity, val drawerLayout: DrawerLayout ) : NavigationView.OnNavigationItemSelectedListener {
+class MainNavigationListener(val activity : AppCompatActivity, val drawerLayout: androidx.drawerlayout.widget.DrawerLayout) : NavigationView.OnNavigationItemSelectedListener {
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.

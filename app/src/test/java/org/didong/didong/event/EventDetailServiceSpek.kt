@@ -4,6 +4,7 @@ import com.winterbe.expekt.should
 import io.mockk.mockk
 import org.amshove.kluent.`should be`
 import org.amshove.kluent.shouldContain
+import org.didong.didong.calendar.CalendarService
 import org.didong.didong.gui.UIService
 import org.jetbrains.spek.api.Spek
 import org.jetbrains.spek.api.dsl.describe

@@ -1,8 +1,7 @@
 package org.didong.didong.event
 
 import android.app.Activity
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v7.widget.RecyclerView
+import androidx.core.view.GestureDetectorCompat
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -22,16 +21,50 @@ import java.util.*
 /**
  * Created by Vincent Couturier on 04/06/2017.
  */
-class DateSelectionViewHolder : RecyclerView.ViewHolder {
-    val injector: KodeinInjector
+class DateSelectionViewHolder(parentActivity: Activity, parentInjector: KodeinInjector, itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    val injector: KodeinInjector = parentInjector
     val evtService: EventDetailService
 
-    constructor(parentActivity: Activity, parentInjector: KodeinInjector, itemView: View?) : super(itemView) {
-        injector = parentInjector
+    init {
         evtService = injector.instance<EventDetailService>().value
-        if (itemView != null) {
+        initDateSelectionView(evtService, itemView)
+        val flingListener = object : GestureDetector.SimpleOnGestureListener() {
+            override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float,
+                                 velocityY: Float): Boolean {
+                Log.println(Log.DEBUG, "app", "$e1 $e2 $velocityX $velocityY")
+                if (Math.abs(velocityX) > 700 && Math.abs(velocityY) < 500) {
+                    val sign : Long = if (velocityX>0) 1 else -1
+                    val dayInMilliseconds : Long = 24 /*hours*/ * 3_600_000 /*milliseconds*/
+                    evtService.currentDate = Date(evtService.currentDate.time + sign* dayInMilliseconds)
+                    evtService.refreshCurrentEventList()
+                    return true
+                }
+                return false
+            }
+
+            override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
+                Log.println(Log.DEBUG, "app", "$e1 $e2 $distanceX $distanceY")
+                return super.onScroll(e1, e2, distanceX, distanceY)
+            }
+
+            override fun onDown(e: MotionEvent?): Boolean {
+                Log.println(Log.DEBUG, "app", "$e")
+                return super.onDown(e)
+            }
+        }
+        val gestDetector = GestureDetectorCompat(parentActivity, flingListener)
+        itemView.setOnTouchListener(object: View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                gestDetector.onTouchEvent(event)
+                return true
+            }
+        })
+    }
+
+    companion object {
+        fun initDateSelectionView(evtService: EventDetailService, itemView: View) {
             val currentDate = itemView.findViewById(R.id.currentDate) as EditText
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
             initEditTextWithTodaysDate(currentDate, dateFormat)
             currentDate.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(p0: Editable?) {
@@ -46,7 +79,7 @@ class DateSelectionViewHolder : RecyclerView.ViewHolder {
                         val selectedCurrentDate = dateFormat.parse(currentDateStr)
                         if (evtService.currentDate != selectedCurrentDate) {
                             evtService.currentDate = selectedCurrentDate
-                            evtService.refreshCurrentEventList(parentActivity)
+                            evtService.refreshCurrentEventList()
                         }
                     } catch(parseException: ParseException) {
                         // Do nothing because the date input could be edited and partial
@@ -56,10 +89,10 @@ class DateSelectionViewHolder : RecyclerView.ViewHolder {
             })
 
             evtService.listeners.add(object : DataChangeEventListener {
-                override fun dataChange(evt: Any) {
-                    if (evt is Date) {
+                override fun dataChange(newObject: Any?) {
+                    if (newObject is Date) {
                         // Check if the date is really 'changed'
-                        val newCurrentDateStr = dateFormat.format(evt.time)
+                        val newCurrentDateStr = dateFormat.format(newObject.time)
                         if (currentDate.text.toString() != newCurrentDateStr) {
                             currentDate.setText(newCurrentDateStr, TextView.BufferType.EDITABLE)
                         }
@@ -90,45 +123,12 @@ class DateSelectionViewHolder : RecyclerView.ViewHolder {
             goToday.setOnClickListener {
                 initEditTextWithTodaysDate(currentDate, dateFormat)
             }
-            val flingListener = object : GestureDetector.SimpleOnGestureListener() {
-                override fun onFling(e1: MotionEvent, e2: MotionEvent, velocityX: Float,
-                                     velocityY: Float): Boolean {
-                    Log.println(Log.DEBUG, "app", "$e1 $e2 $velocityX $velocityY")
-                    if (Math.abs(velocityX) > 700 && Math.abs(velocityY) < 500) {
-                        val sign : Long = if (velocityX>0) 1 else -1
-                        val dayInMilliseconds : Long = 24 /*hours*/ * 3_600_000 /*milliseconds*/
-                        evtService.currentDate = Date(evtService.currentDate.time + sign* dayInMilliseconds)
-                        evtService.refreshCurrentEventList(parentActivity)
-                        return true;
-                    }
-                    return false
-                }
+        }
 
-                override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-                    Log.println(Log.DEBUG, "app", "$e1 $e2 $distanceX $distanceY")
-                    return super.onScroll(e1, e2, distanceX, distanceY)
-                }
-
-                override fun onDown(e: MotionEvent?): Boolean {
-                    Log.println(Log.DEBUG, "app", "$e")
-                    return super.onDown(e)
-                }
-            }
-            val gestDetector = GestureDetectorCompat(parentActivity, flingListener)
-
-            itemView.setOnTouchListener(object: View.OnTouchListener {
-                override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                    gestDetector.onTouchEvent(event)
-                    return true
-                }
-            })
+        private fun initEditTextWithTodaysDate(editText: EditText, dateFormat: SimpleDateFormat) {
+            val today = Calendar.getInstance()
+            editText.setText(dateFormat.format(today.time), TextView.BufferType.EDITABLE)
         }
     }
 
-
-
-    private fun initEditTextWithTodaysDate(editText: EditText, dateFormat: SimpleDateFormat) {
-        val today = Calendar.getInstance()
-        editText.setText(dateFormat.format(today.time), TextView.BufferType.EDITABLE)
-    }
 }

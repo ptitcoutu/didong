@@ -1,9 +1,9 @@
 package org.didong.didong
 
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -13,19 +13,19 @@ import android.view.ViewGroup
 import android.widget.AdapterView.OnItemSelectedListener
 import android.content.Context
 import android.content.Intent
-import android.support.v7.widget.ThemedSpinnerAdapter
+import androidx.appcompat.widget.ThemedSpinnerAdapter
 import android.content.res.Resources.Theme
-import android.support.design.widget.NavigationView
-import android.support.design.widget.TextInputEditText
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.widget.CardView
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.textfield.TextInputEditText
+import androidx.appcompat.app.ActionBarDrawerToggle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.*
+import androidx.fragment.app.FragmentActivity
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.android.*
 import com.github.salomonbrys.kodein.instance
+import kotlinx.android.synthetic.main.date_selection.view.*
 import org.didong.didong.event.DateSelectionViewHolder
 import org.didong.didong.event.EventDetailService
 import org.didong.didong.gui.expandFirstLevelChildren
@@ -44,7 +44,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
 
-        val drawer = findViewById(R.id.report_drawer_layout) as DrawerLayout
+        val drawer = findViewById(R.id.report_drawer_layout) as androidx.drawerlayout.widget.DrawerLayout
         val toggle = ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer.addDrawerListener(toggle)
@@ -145,24 +145,25 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
         var parentActivity: ReportActivity? = null
         val evtService: EventDetailService by injector.instance()
 
-        override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+        override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                                   savedInstanceState: Bundle?): View? {
             initializeInjector()
-            val currActivity = parentActivity?:this.activity as ReportActivity
-            val arg = arguments.getInt(ARG_SECTION_NUMBER)
+            val currActivity = (parentActivity ?: this.activity!!) as ReportActivity
+            val arg = arguments?.getInt(ARG_SECTION_NUMBER)
             val rootView = if (arg == 1) {
-                val dayReport = inflater!!.inflate(R.layout.fragment_report_day, container, false)
+                val dayReport = inflater.inflate(R.layout.fragment_report_day, container, false)
+                DateSelectionViewHolder.initDateSelectionView(evtService, dayReport.findViewById(R.id.currentdate_card))
+
                 val itemList = dayReport.findViewById(R.id.tagActivityList) as ExpandableListView
                 val tagsActivity = evtService.getTagsActivity(currActivity)
                 itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
                 itemList.expandFirstLevelChildren()
-                val dateCard = dayReport.findViewById(R.id.currentdate_card) as CardView
                 evtService.listeners.add(
                         object : DataChangeEventListener {
-                            override fun dataChange(evt: Any) {
-                                if (evt is Date) {
-                                    val tagsActivity = evtService.getTagsActivity(currActivity)
-                                    itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
+                            override fun dataChange(newObject: Any?) {
+                                if (newObject is Date) {
+                                    val currentTagsActivity = evtService.getTagsActivity(currActivity)
+                                    itemList.setAdapter(ReportListAdapter(evtService, currentTagsActivity))
                                     itemList.expandFirstLevelChildren()
                                 }
                             }
@@ -170,7 +171,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 )
                 dayReport
             } else if (arg == 2) {
-                val weekReport = inflater!!.inflate(R.layout.fragment_report_week, container, false)
+                val weekReport = inflater.inflate(R.layout.fragment_report_week, container, false)
                 val itemList = weekReport.findViewById(R.id.tagActivityList) as ExpandableListView
                 val cal = Calendar.getInstance()
                 var year = cal.get(Calendar.YEAR)
@@ -217,7 +218,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                     }
                 })
                 val nextWeekButton = weekReport.findViewById(R.id.nextWeek) as Button
-                nextWeekButton.setOnClickListener { view ->
+                nextWeekButton.setOnClickListener { _ ->
                     week++
                     if(week > evtService.getLastWeekNumber(year)) {
                         week = 1
@@ -228,7 +229,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                     processWeek(week, year, itemList)
                 }
                 val previousWeekButton = weekReport.findViewById(R.id.previousWeek) as Button
-                previousWeekButton.setOnClickListener { view ->
+                previousWeekButton.setOnClickListener { _ ->
                     week--
                     if (week<=0) {
                         year--
@@ -240,7 +241,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
                 }
                 weekReport
             } else {
-                val notYetImplementedReport = inflater!!.inflate(R.layout.fragment_report, container, false)
+                val notYetImplementedReport = inflater.inflate(R.layout.fragment_report, container, false)
                 val textView = notYetImplementedReport.findViewById(R.id.section_label) as TextView
                 textView.text = this.resources.getString(R.string.coming_soon)
                 notYetImplementedReport
@@ -249,7 +250,7 @@ class ReportActivity : AppCompatActivity(),AppCompatActivityInjector {
         }
 
         fun processWeek(week : Int, year: Int, itemList: ExpandableListView) {
-            val currActivity = this@PlaceholderFragment.parentActivity?:activity
+            val currActivity : FragmentActivity = this@PlaceholderFragment.parentActivity ?: activity!!
             val tagsActivity = evtService.getWeekTagsActivity(currActivity, week, year)
             itemList.setAdapter(ReportListAdapter(evtService, tagsActivity))
             itemList.expandFirstLevelChildren()
