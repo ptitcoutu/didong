@@ -92,6 +92,10 @@ class MainActivity : AppCompatActivity(), DataChangeEventListener, AppCompatActi
                 startActivity(prefIntent)
                 true
             }
+            R.id.action_refresh_events -> {
+                evtService.refreshCurrentEventList()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

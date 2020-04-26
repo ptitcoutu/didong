@@ -107,10 +107,11 @@
     <string name="toolbar_month">Month</string>
     <string name="toolbar_year">Year</string>
     <string name="toolbar_specific_range">Specific Range</string>
-    <string name="coming_soon">Coming soon...</string>
+    <string name="coming_soon">Coming soon…</string>
     <string name="error_occurs">Error occurs :</string>
     <string name="action_close">Close</string>
     <string name="calendar_must_be_selected">A calendar must be selected in app settings</string>
     <string name="event_start">Start</string>
     <string name="event_stop">Stop</string>
+    <string name="action_refresh_events">Refresh activities</string>
 </resources>

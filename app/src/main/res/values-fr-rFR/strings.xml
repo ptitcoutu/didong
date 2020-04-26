@@ -43,6 +43,7 @@
     <string name="calendar_must_be_selected">Un agenda doit être sélectionné dans le paramétrage de l\'application</string>
     <string name="event_start">Début</string>
     <string name="event_stop">Fin</string>
+    <string name="action_refresh_events">Rafraîchir les activités</string>
     <string-array name="pref_sync_frequency_titles">
         <item>15 minutes</item>
         <item>30 minutes</item>
